@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Smarsy.Extensions;
 using Smarsy.Logic;
 using SmarsyEntities;
 
@@ -156,27 +157,22 @@ namespace Smarsy
 
         private static string GenerateEmailBodyForHomeWork(IEnumerable<HomeWork> hwList)
         {
-            var result = "";
+            var result = new StringBuilder();
             var isFirst = true;
             foreach (var homeWork in hwList)
             {
                 if (isFirst && ((homeWork.HomeWorkDate - DateTime.Now)).TotalDays > 1)
                 {
-                    result += Environment.NewLine;
-                    result += Environment.NewLine;
+                    result.AppendLine();
+                    result.AppendLine();
                     isFirst = false;
                 }
-                result += homeWork.HomeWorkDate.ToShortDateString();
-                result += " - ";
-                result += homeWork.LessonName;
-                result += " - ";
-
-                result += homeWork.TeacherName;
-                result += " - ";
-                result += homeWork.HomeWorkDescr;
-                result += Environment.NewLine;
+                result.AppendWithDashes(homeWork.HomeWorkDate.ToShortDateString());
+                result.AppendWithDashes(homeWork.LessonName);
+                result.AppendWithDashes(homeWork.TeacherName);
+                result.AppendWithNewLine(homeWork.HomeWorkDescr);
             }
-            return result;
+            return result.ToString();
         }
 
         private  string GetTeacherNameFromLessonWithTeacher(string lessonNameWithTeacher, string lessonName)
@@ -201,12 +197,9 @@ namespace Smarsy
                 sb.Append(Environment.NewLine);
                 foreach (var mark in lesson.Marks.OrderByDescending(x => x.Date))
                 {
-                    sb.Append(mark.Date.ToShortDateString());
-                    sb.Append(" - ");
-                    sb.Append(mark.Mark);
-                    sb.Append(" - ");
-                    sb.Append(mark.Reason);
-                    sb.Append(Environment.NewLine);
+                    sb.AppendWithDashes(mark.Date.ToShortDateString());
+                    sb.AppendWithDashes(mark.Mark);
+                    sb.AppendWithNewLine(mark.Reason);
                 }
                 sb.Append(Environment.NewLine);
             }
@@ -307,19 +300,18 @@ namespace Smarsy
         {
             var emailTo = "keyboards4everyone@gmail.com";
             var subject = "Лизины оценки (" + DateTime.Now.ToShortDateString() + ")";
-            var emailBody = "";
+            var emailBody = new StringBuilder();
 
             if (_newMarks.Any())
             {
-                emailBody = GenerateEmailBodyForMarks(_newMarks);
+                emailBody.Append(GenerateEmailBodyForMarks(_newMarks));
 
             }
+            emailBody.AppendLine();
+            emailBody.AppendLine();
+            emailBody.Append(GenerateEmailBodyForHomeWork(_sqlServerLogic.GetHomeWorkForFuture()));
 
-            emailBody += Environment.NewLine;
-            emailBody += Environment.NewLine;
-            emailBody += GenerateEmailBodyForHomeWork(_sqlServerLogic.GetHomeWorkForFuture());
-
-            new EmailLogic().SendEmail(emailTo, subject, emailBody);
+            new EmailLogic().SendEmail(emailTo, subject, emailBody.ToString());
         }
     }
 }
