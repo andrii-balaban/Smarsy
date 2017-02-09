@@ -12,7 +12,7 @@ namespace Smarsy.Logic
         private readonly string _stringConn =
             "Data Source = localhost;Initial Catalog=Smarsy; Integrated Security = True; Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout = 60; Encrypt=False;TrustServerCertificate=True";
         //"Data Source=(localdb)\\ProjectsV13;Initial Catalog=Smarsy;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True";
-        
+
         public void UpsertLessons(List<string> lessons)
         {
             foreach (var lesson in lessons)
@@ -22,6 +22,36 @@ namespace Smarsy.Logic
             ;
         }
 
+        public void UpsertHomeWorks(List<HomeWork> hwList)
+        {
+            foreach (var homeWork in hwList)
+            {
+                UpsertHomeWork(homeWork);
+            }
+        }
+
+        private void UpsertHomeWork(HomeWork hw)
+        {
+            using (var objconnection = new SqlConnection(_stringConn))
+            {
+                objconnection.Open();
+                using (var objcmd = new SqlCommand("dbo.p_UpsertHomeWork", objconnection))
+                {
+                    objcmd.CommandType = CommandType.StoredProcedure;
+                    objcmd.Parameters.Add("@lessonId", SqlDbType.Int);
+                    objcmd.Parameters["@lessonId"].Value = hw.LessonId;
+                    objcmd.Parameters.Add("@homeWork", SqlDbType.NVarChar, 2000);
+                    objcmd.Parameters["@homeWork"].Value = hw.HomeWorkDescr;
+                    objcmd.Parameters.Add("@homeWorkDate", SqlDbType.Date);
+                    objcmd.Parameters["@homeWorkDate"].Value = hw.HomeWorkDate;
+                    objcmd.Parameters.Add("@teacherId", SqlDbType.Int);
+                    objcmd.Parameters["@teacherId"].Value = hw.TeacherId;
+
+                    objcmd.ExecuteNonQuery();
+                }
+            }
+
+        }
         private void InsertLessonIfNotExists(string lesson)
         {
             using (var objconnection = new SqlConnection(_stringConn))
@@ -55,6 +85,41 @@ namespace Smarsy.Logic
                 if (lesson.Marks.Any()) result.Add(lesson);
             }
             return result;
+        }
+
+        public int GetLessonIdByLessonShortName(string lessonName)
+        {
+            using (var objconnection = new SqlConnection(_stringConn))
+            {
+                objconnection.Open();
+
+                using (var objcmd = new SqlCommand("select dbo.fn_GetLessonIdByLessonShortName(@lessonName)", objconnection))
+                {
+
+                    objcmd.CommandType = CommandType.Text;
+                    objcmd.Parameters.AddWithValue("@lessonName", lessonName);
+                    var res = objcmd.ExecuteScalar();
+                    return int.Parse(res.ToString());
+                }
+
+            }
+        }
+
+        public int InsertTeacherIfNotExists(string teacherName)
+        {
+            using (var objconnection = new SqlConnection(_stringConn))
+            {
+                objconnection.Open();
+                using (var objcmd = new SqlCommand("dbo.p_InsertTeacherIfNotExists", objconnection))
+                {
+                    objcmd.CommandType = CommandType.StoredProcedure;
+                    objcmd.Parameters.Add("@teacherName", SqlDbType.NVarChar, 100);
+                    objcmd.Parameters["@teacherName"].Value = teacherName;
+                    objcmd.Parameters.Add("@CreatedId", SqlDbType.Int).Direction = ParameterDirection.Output;
+                    objcmd.ExecuteNonQuery();
+                    return Convert.ToInt32(objcmd.Parameters["@CreatedId"].Value);
+                }
+            }
         }
 
         private int GetStudentIdByChildId(int childId)
@@ -138,7 +203,7 @@ namespace Smarsy.Logic
             }
 
         }
-        
+
         public Student GetStudentBySmarsyChildId(int childId)
         {
             var result = new Student();
@@ -159,6 +224,35 @@ namespace Smarsy.Logic
                         result.Login = res["Login"].ToString();
                         result.Password = res["Password"].ToString();
                         result.SmarsyChildId = int.Parse(res["SmarsyChildId"].ToString());
+                    }
+                }
+                return result;
+            }
+
+        }
+
+        public List<HomeWork> GetHomeWorkForFuture()
+        {
+            var result = new List<HomeWork>();
+
+            using (var objconnection = new SqlConnection(_stringConn))
+            {
+                objconnection.Open();
+                using (var objcmd = new SqlCommand("dbo.p_GetHomeWorkForFuture", objconnection))
+                {
+                    objcmd.CommandType = CommandType.StoredProcedure;
+
+                    var res = objcmd.ExecuteReader();
+                    while (res.Read())
+                    {
+                        result.Add(new HomeWork()
+                        {
+                            LessonName = res["LessonName"].ToString(),
+                            HomeWorkDescr = res["HomeWork"].ToString(),
+                            TeacherName = res["TeacherName"].ToString(),
+                            HomeWorkDate = Convert.ToDateTime(res["HomeWorkDate"].ToString())
+                        });
+
                     }
                 }
                 return result;

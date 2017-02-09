@@ -59,7 +59,6 @@
     <Folder Include="Properties" />
     <Folder Include="Tables" />
     <Folder Include="Stored Procedures" />
-    <Folder Include="README" />
     <Folder Include="UDT" />
     <Folder Include="Functions" />
   </ItemGroup>
@@ -73,10 +72,17 @@
     <Build Include="Functions\fn_GetLessonIdByLessonName.sql" />
     <Build Include="Functions\fn_GetStudentIdByChildId.sql" />
     <Build Include="Stored Procedures\p_GetStudentBySmarsyId.sql" />
+    <Build Include="Tables\HomeWork.sql" />
+    <Build Include="Tables\HomeWork_History.sql" />
+    <Build Include="Stored Procedures\p_UpsertHomeWork.sql" />
+    <Build Include="Stored Procedures\p_InsertTeacherIfNotExists.sql" />
+    <Build Include="Tables\Teacher.sql" />
+    <Build Include="Tables\LessonLessonShort.sql" />
+    <Build Include="Functions\fn_GetLessonIdByLessonShortName.sql" />
+    <Build Include="Stored Procedures\p_GetHomeWorkForFuture.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Smarsy.SQL.publish.xml" />
-    <None Include="README\TextFile1.txt" />
     <None Include="Smarsy.SQL_dev.publish.xml" />
   </ItemGroup>
 </Project>

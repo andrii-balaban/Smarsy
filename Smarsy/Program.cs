@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -20,8 +21,6 @@ namespace Smarsy
             GoToLink(webBrowser, "http://www.smarsy.ua");
 
             Login(student, webBrowser);
-            GoToLink(webBrowser, "http://smarsy.ua/private/parent.php");
-
             GoToLink(webBrowser, "http://smarsy.ua/private/parent.php?jsid=Diary&child=" + student.SmarsyChildId + "&tab=Mark");
 
             if (webBrowser.Document == null) return;
@@ -47,12 +46,100 @@ namespace Smarsy
                     }
                 }
             }
-            sl.UpsertLessons(marks.Select( x => x.LessonName).Distinct().ToList());
+            sl.UpsertLessons(marks.Select(x => x.LessonName).Distinct().ToList());
+            GoToLink(webBrowser, "http://smarsy.ua/private/parent.php?jsid=Homework&child=" + student.SmarsyChildId + "&tab=Lesson");
+            var homeWorks = new List<HomeWork>();
+            tables = webBrowser.Document.GetElementsByTagName("table");
+            var separateLessonNameFromHomeWork = 0;
+            var teacherId = 0;
+            var lessonId = 0;
+            foreach (HtmlElement el in tables)
+            {
+
+                if (separateLessonNameFromHomeWork++ % 2 == 0)
+                {
+                    var lessonNameWithTeacher = el.InnerText.Replace("\r\n", "");
+                    var lessonName = GetLessonNameFromLessonWithTeacher(lessonNameWithTeacher);
+                    var teacherName = GetTeacherNameFromLessonWithTeacher(lessonNameWithTeacher, lessonName);
+                    teacherId = sl.InsertTeacherIfNotExists(teacherName);
+                    lessonId = sl.GetLessonIdByLessonShortName(lessonName);
+                }
+                else
+                {
+                    foreach (HtmlElement rows in el.All)
+                    {
+                        isHeader = true;
+                        foreach (HtmlElement row in rows.GetElementsByTagName("tr"))
+                        {
+                            if (isHeader)
+                            {
+                                isHeader = false;
+                                continue;
+                            }
+                            var tmp = ProccessHomeWork(row);
+                            tmp.LessonId = lessonId;
+                            tmp.TeacherId = teacherId;
+                            if (tmp.HomeWorkDescr != null && !tmp.HomeWorkDescr.Trim().Equals(""))
+                                homeWorks.Add(tmp);
+                        }
+                    }
+                }
+            }
+
+            sl.UpsertHomeWorks(homeWorks);
+            var emailTo = "keyboards4everyone@gmail.com";
+            var subject = "Лизины оценки (" + DateTime.Now.ToShortDateString() + ")";
+            var emailBody = "";
+
             var newMarks = sl.UpserStudentAllLessonsMarks(student.SmarsyChildId, marks);
             if (newMarks.Any())
             {
-                new EmailLogic().SendEmail("keyboards4everyone@gmail.com", "Лизины оценки (" + DateTime.Now.ToShortDateString()  +")", GenerateEmailBodyForMarks(newMarks));
+                emailBody = GenerateEmailBodyForMarks(newMarks);
+                
             }
+
+            emailBody += Environment.NewLine;
+            emailBody += Environment.NewLine;
+            emailBody += GenerateEmailBodyForHomeWork(sl.GetHomeWorkForFuture());
+
+            new EmailLogic().SendEmail(emailTo, subject, emailBody);
+        }
+
+        private static string GenerateEmailBodyForHomeWork(List<HomeWork> hwList)
+        {
+            var result = "";
+            var isFirst = true;
+            foreach (var homeWork in hwList)
+            {
+                if (isFirst && ((TimeSpan) (homeWork.HomeWorkDate - DateTime.Now)).TotalDays > 1)
+                {
+                    result += Environment.NewLine;
+                    result += Environment.NewLine;
+                    isFirst = false;
+                }
+                result += homeWork.HomeWorkDate.ToShortDateString();
+                result += " - ";
+                result += homeWork.LessonName;
+                result += " - ";  
+
+                result += homeWork.TeacherName;
+                result += " - ";
+                result += homeWork.HomeWorkDescr;
+                result += Environment.NewLine;
+            }
+            return result;
+        }
+
+        private static string GetTeacherNameFromLessonWithTeacher(string lessonNameWithTeacher, string lessonName)
+        {
+            var result = lessonNameWithTeacher.Replace(lessonName, "").Replace("(", "").Replace(")", "").Trim();
+            return result;
+        }
+
+        private static string GetLessonNameFromLessonWithTeacher(string lessonNameWithTeacher)
+        {
+            var result = lessonNameWithTeacher.Substring(0, lessonNameWithTeacher.IndexOf("(") - 1);
+            return result;
         }
 
         private static string GenerateEmailBodyForMarks(List<MarksRowElement> marks)
@@ -110,15 +197,40 @@ namespace Smarsy
             return marks;
         }
 
+        private static HomeWork ProccessHomeWork(HtmlElement row)
+        {
+            var result = new HomeWork();
+            var i = 0;
+            foreach (HtmlElement cell in row.GetElementsByTagName("td"))
+            {
+                if (i == 0)
+                {
+                    i++;
+                    continue;
+                }
+                if (i == 1) result.HomeWorkDate = DateTime.Parse(ChangeDateFormat(cell.InnerText));
+                if (i++ == 2)
+                {
+                    result.HomeWorkDescr = cell.InnerText;
+                }
+            }
+            return result;
+        }
+
         private static DateTime GetDateFromComment(string comment, bool isThisYear = true)
         {
             var year = isThisYear ? DateTime.Now.Year.ToString() : (DateTime.Now.Year - 1).ToString();
             var dateWithText = GetTextBetweenSubstrings(comment, "Дата оценки: ", ";");
             var date = dateWithText.Substring(3, dateWithText.Length - 3) + "." + year;
 
-            var result =  date.Substring(6, 4) + "." + date.Substring(3, 2) + "." + date.Substring(0, 2);
+            var result = ChangeDateFormat(date);
             return DateTime.Parse(result);
 
+        }
+
+        private static string ChangeDateFormat(string date)
+        {
+            return date.Substring(6, 4) + "." + date.Substring(3, 2) + "." + date.Substring(0, 2);
         }
 
         private static string GetTextBetweenSubstrings(string text, string from, string to)
