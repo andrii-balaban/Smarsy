@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fn_GetStudentIdByChildId] (@childId INT)
+﻿CREATE FUNCTION [dbo].[GetStudentIdBySmarsyLogin] (@login INT)
 RETURNS INT
 AS
 BEGIN
@@ -7,7 +7,7 @@ BEGIN
 
     SELECT @studentId = Id
     FROM dbo.Student AS s
-    WHERE s.SmarsyChildId = @childId;
+    WHERE s.Login = @login;
 
     RETURN @studentId;
 END;

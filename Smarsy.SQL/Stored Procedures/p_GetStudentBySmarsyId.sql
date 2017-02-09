@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[p_GetStudentBySmarsyId] @smarsyChildId INT
+﻿CREATE PROCEDURE [dbo].[p_GetStudentBySmarsyId] @login VARCHAR(50)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -9,6 +9,6 @@ BEGIN
         s.Password,
         s.SmarsyChildId
     FROM dbo.Student AS s
-    WHERE s.Login = @smarsyChildId;
+    WHERE s.Login = @login;
 
 END;

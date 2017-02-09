@@ -69,10 +69,10 @@ namespace Smarsy.Logic
 
         }
 
-        public List<MarksRowElement> UpserStudentAllLessonsMarks(int childId, List<MarksRowElement> marks)
+        public List<MarksRowElement> UpserStudentAllLessonsMarks(string login, List<MarksRowElement> marks)
         {
             var result = new List<MarksRowElement>();
-            int studentId = GetStudentIdByChildId(childId);
+            int studentId = GetStudentIdBySmarsyLogin(login);
             foreach (var mark in marks)
             {
                 var lessonId = GetLessonIdByName(mark.LessonName);
@@ -122,17 +122,17 @@ namespace Smarsy.Logic
             }
         }
 
-        private int GetStudentIdByChildId(int childId)
+        private int GetStudentIdBySmarsyLogin(string login)
         {
             using (var objconnection = new SqlConnection(_stringConn))
             {
                 objconnection.Open();
 
-                using (var objcmd = new SqlCommand("select dbo.fn_GetStudentIdByChildId(@studentId)", objconnection))
+                using (var objcmd = new SqlCommand("select dbo.GetStudentIdBySmarsyLogin(@login)", objconnection))
                 {
 
                     objcmd.CommandType = CommandType.Text;
-                    objcmd.Parameters.AddWithValue("@studentId", childId);
+                    objcmd.Parameters.AddWithValue("@login", login);
                     var res = objcmd.ExecuteScalar();
                     return int.Parse(res.ToString());
                 }
@@ -204,7 +204,7 @@ namespace Smarsy.Logic
 
         }
 
-        public Student GetStudentBySmarsyChildId(int childId)
+        public Student GetStudentBySmarsyLogin(string login)
         {
             var result = new Student();
             using (var objconnection = new SqlConnection(_stringConn))
@@ -213,8 +213,8 @@ namespace Smarsy.Logic
                 using (var objcmd = new SqlCommand("dbo.p_GetStudentBySmarsyId", objconnection))
                 {
                     objcmd.CommandType = CommandType.StoredProcedure;
-                    objcmd.Parameters.Add("@smarsyChildId", SqlDbType.Int);
-                    objcmd.Parameters["@smarsyChildId"].Value = childId;
+                    objcmd.Parameters.Add("@login", SqlDbType.VarChar, 50);
+                    objcmd.Parameters["@login"].Value = login;
 
                     var res = objcmd.ExecuteReader();
                     while (res.Read())

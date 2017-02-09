@@ -70,7 +70,7 @@
     <Build Include="Stored Procedures\p_UpsertStudentMarks.sql" />
     <Build Include="UDT\udt_MarksWithDates.sql" />
     <Build Include="Functions\fn_GetLessonIdByLessonName.sql" />
-    <Build Include="Functions\fn_GetStudentIdByChildId.sql" />
+    <Build Include="Functions\GetStudentIdBySmarsyLogin.sql" />
     <Build Include="Stored Procedures\p_GetStudentBySmarsyId.sql" />
     <Build Include="Tables\HomeWork.sql" />
     <Build Include="Tables\HomeWork_History.sql" />
