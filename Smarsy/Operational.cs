@@ -35,6 +35,7 @@ namespace Smarsy
 
         public void InitStudentFromDb()
         {
+            _logger.Info($"Getting student info from database");
             Student = _sqlServerLogic.GetStudentBySmarsyLogin(Student.Login);
         }
 
@@ -53,14 +54,6 @@ namespace Smarsy
         }
 
 
-        private void FillUserName()
-        {
-            if (SmarsyBrowser.Document == null) return;
-            var element = SmarsyBrowser.Document.GetElementById("username");
-            if (element != null)
-                element.InnerText = Student.Login;
-        }
-
         private void ClickOnLoginButton()
         {
             if (SmarsyBrowser.Document == null) return;
@@ -73,18 +66,19 @@ namespace Smarsy
             }
         }
 
-        private void FillPassword()
+        private void FillTextBoxByElementId(string elementId, string value)
         {
+            _logger.Info($"Entering text to the \"{elementId}\" element");
             if (SmarsyBrowser.Document == null) return;
-            var element = SmarsyBrowser.Document.GetElementById("password");
+            var element = SmarsyBrowser.Document.GetElementById(elementId);
             if (element != null)
-                element.InnerText = Student.Password;
+                element.InnerText = value;
         }
 
         private void Login()
         {
-            FillUserName();
-            FillPassword();
+            FillTextBoxByElementId("username", Student.Login);
+            FillTextBoxByElementId("password", Student.Password);
             ClickOnLoginButton();
 
             WaitForPageToLoad();
@@ -154,6 +148,7 @@ namespace Smarsy
                     }
                 }
             }
+            _logger.Info($"Upserting lessons in database");
             _sqlServerLogic.UpsertLessons(marks.Select(x => x.LessonName).Distinct().ToList());
             _newMarks = _sqlServerLogic.UpserStudentAllLessonsMarks(Student.Login, marks);
         }
@@ -297,6 +292,7 @@ namespace Smarsy
                     }
                 }
             }
+            _logger.Info($"Upserting homeworks in database");
             _sqlServerLogic.UpsertHomeWorks(homeWorks);
         }
 
@@ -315,6 +311,7 @@ namespace Smarsy
             emailBody.AppendLine();
             emailBody.Append(GenerateEmailBodyForHomeWork(_sqlServerLogic.GetHomeWorkForFuture()));
 
+            _logger.Info($"Sending email to {emailTo}");
             new EmailLogic().SendEmail(emailTo, subject, emailBody.ToString());
         }
     }
