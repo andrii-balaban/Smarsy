@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using NLog;
 using Smarsy.Extensions;
 using Smarsy.Logic;
 using SmarsyEntities;
@@ -13,6 +14,8 @@ namespace Smarsy
 
     public class Operational
     {
+        private static Logger _logger = LogManager.GetCurrentClassLogger();
+
         private readonly SqlServerLogic _sqlServerLogic;
         private List<MarksRowElement> _newMarks;
         public Student Student { get; set; }
@@ -37,6 +40,7 @@ namespace Smarsy
 
         private void GoToLink(string url)
         {
+            _logger.Info($"Go to {url} page");
             SmarsyBrowser.Navigate(url);
             WaitForPageToLoad();
         }
