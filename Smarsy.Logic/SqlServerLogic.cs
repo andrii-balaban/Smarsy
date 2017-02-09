@@ -19,7 +19,6 @@ namespace Smarsy.Logic
             {
                 InsertLessonIfNotExists(lesson);
             }
-            ;
         }
 
         public void UpsertHomeWorks(List<HomeWork> hwList)
@@ -76,12 +75,12 @@ namespace Smarsy.Logic
             foreach (var mark in marks)
             {
                 var lessonId = GetLessonIdByName(mark.LessonName);
-                var lesson = new MarksRowElement()
+                var lesson = new MarksRowElement
                 {
                     LessonName = mark.LessonName,
-                    LessonId = lessonId
+                    LessonId = lessonId,
+                    Marks = UpsertStudentMarks(studentId, lessonId, mark.Marks)
                 };
-                lesson.Marks = UpsertStudentMarks(studentId, lessonId, mark.Marks);
                 if (lesson.Marks.Any()) result.Add(lesson);
             }
             return result;

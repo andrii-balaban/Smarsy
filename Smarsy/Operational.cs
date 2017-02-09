@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using Smarsy.Logic;
@@ -51,6 +50,7 @@ namespace Smarsy
 
         private void FillUserName()
         {
+            if (SmarsyBrowser.Document == null) return;
             var element = SmarsyBrowser.Document.GetElementById("username");
             if (element != null)
                 element.InnerText = Student.Login;
@@ -70,6 +70,7 @@ namespace Smarsy
 
         private void FillPassword()
         {
+            if (SmarsyBrowser.Document == null) return;
             var element = SmarsyBrowser.Document.GetElementById("password");
             if (element != null)
                 element.InnerText = Student.Password;
@@ -93,13 +94,11 @@ namespace Smarsy
         private MarksRowElement ProcessMarksRow(HtmlElement row)
         {
             var i = 0;
-            var tmpList = new List<string>();
             var tmpMarks = row;
             var lessonName = "";
 
             foreach (HtmlElement cell in row.GetElementsByTagName("td"))
             {
-                tmpList.Add(cell.InnerHtml);
                 if (i == 1) lessonName = cell.InnerHtml;
                 if (i == 3) tmpMarks = cell;
                 i++;
@@ -127,6 +126,7 @@ namespace Smarsy
         {
             GoToLink("http://smarsy.ua/private/parent.php?jsid=Diary&child=" + Student.SmarsyChildId + "&tab=Mark");
 
+            if (SmarsyBrowser.Document == null) return;
             var tables = SmarsyBrowser.Document.GetElementsByTagName("table");
             var i = 0;
             var isHeader = true;
@@ -151,17 +151,16 @@ namespace Smarsy
             }
             _sqlServerLogic.UpsertLessons(marks.Select(x => x.LessonName).Distinct().ToList());
             _newMarks = _sqlServerLogic.UpserStudentAllLessonsMarks(Student.Login, marks);
-
         }
 
 
-        private  string GenerateEmailBodyForHomeWork(List<HomeWork> hwList)
+        private static string GenerateEmailBodyForHomeWork(IEnumerable<HomeWork> hwList)
         {
             var result = "";
             var isFirst = true;
             foreach (var homeWork in hwList)
             {
-                if (isFirst && ((TimeSpan)(homeWork.HomeWorkDate - DateTime.Now)).TotalDays > 1)
+                if (isFirst && ((homeWork.HomeWorkDate - DateTime.Now)).TotalDays > 1)
                 {
                     result += Environment.NewLine;
                     result += Environment.NewLine;
@@ -188,7 +187,7 @@ namespace Smarsy
 
         private  string GetLessonNameFromLessonWithTeacher(string lessonNameWithTeacher)
         {
-            var result = lessonNameWithTeacher.Substring(0, lessonNameWithTeacher.IndexOf("(") - 1);
+            var result = lessonNameWithTeacher.Substring(0, lessonNameWithTeacher.IndexOf("(", StringComparison.Ordinal) - 1);
             return result;
         }
 
@@ -246,31 +245,23 @@ namespace Smarsy
 
         }
 
-        private string ChangeDateFormat(string date)
+        private static string ChangeDateFormat(string date)
         {
             return date.Substring(6, 4) + "." + date.Substring(3, 2) + "." + date.Substring(0, 2);
         }
 
-        private string GetTextBetweenSubstrings(string text, string from, string to)
+        private static string GetTextBetweenSubstrings(string text, string from, string to)
         {
-            int pTo = 0;
             var pFrom = text.IndexOf(from, StringComparison.Ordinal) + from.Length;
-            if (to.Length == 0) pTo = text.Length;
-            else pTo = text.LastIndexOf(to, StringComparison.Ordinal);
+            var pTo = to.Length == 0 ? text.Length : text.LastIndexOf(to, StringComparison.Ordinal);
             return text.Substring(pFrom, pTo - pFrom);
-        }
-
-        private int GetStudentId(WebBrowser webBrowser)
-        {
-            var pattern = new Regex("private/parent.php\\?jsid=Child&child=(?<login>[0-9]*)\"");
-            var match = pattern.Match(webBrowser.DocumentText);
-            var childId = int.Parse(match.Groups["login"].Value);
-            return childId;
         }
 
         public void UpdateHomeWork()
         {
             GoToLink("http://smarsy.ua/private/parent.php?jsid=Homework&child=" + Student.SmarsyChildId + "&tab=Lesson");
+            if (SmarsyBrowser.Document == null) return;
+
             var homeWorks = new List<HomeWork>();
             var tables = SmarsyBrowser.Document.GetElementsByTagName("table");
             var separateLessonNameFromHomeWork = 0;
@@ -309,7 +300,6 @@ namespace Smarsy
                     }
                 }
             }
-
             _sqlServerLogic.UpsertHomeWorks(homeWorks);
         }
 
