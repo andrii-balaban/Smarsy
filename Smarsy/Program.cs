@@ -8,6 +8,8 @@ namespace Smarsy
         private static void Main()
         {
             var op = new Operational("90018970");
+            //op.NlogTest();
+
             op.InitStudentFromDb();
             op.LoginToSmarsy();
             op.UpdateMarks();
