@@ -35,7 +35,7 @@ namespace Smarsy
             Student = _sqlServerLogic.GetStudentBySmarsyLogin(Student.Login);
         }
 
-        public void GoToLink(string url)
+        private void GoToLink(string url)
         {
             SmarsyBrowser.Navigate(url);
             WaitForPageToLoad();
@@ -77,7 +77,7 @@ namespace Smarsy
                 element.InnerText = Student.Password;
         }
 
-        public void Login()
+        private void Login()
         {
             FillUserName();
             FillPassword();
