@@ -2,7 +2,7 @@
 
 namespace SmarsyEntities
 {
-    public class MarksRowElement
+    public class LessonMark
     {
         public List<StudentMark> Marks { get; set; }
         public string LessonName { get; set; }

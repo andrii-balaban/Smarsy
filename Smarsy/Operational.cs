@@ -20,7 +20,6 @@ namespace Smarsy
         private static Logger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly SqlServerLogic _sqlServerLogic;
-        private List<MarksRowElement> _newMarks;
         public Student Student { get; set; }
         public WebBrowser SmarsyBrowser { get; set; }
 
@@ -93,7 +92,7 @@ namespace Smarsy
             Login();
         }
 
-        private MarksRowElement ProcessMarksRow(HtmlElement row)
+        private LessonMark ProcessMarksRow(HtmlElement row)
         {
             var i = 0;
             var tmpMarks = row;
@@ -106,7 +105,7 @@ namespace Smarsy
                 i++;
             }
 
-            var marks = new MarksRowElement()
+            var marks = new LessonMark()
             {
                 LessonName = lessonName,
                 Marks = new List<StudentMark>()
@@ -134,7 +133,7 @@ namespace Smarsy
             var isHeader = true;
             // https://social.msdn.microsoft.com/Forums/en-US/62e0fcd1-3d44-4b34-aa38-0749678aa0b6/extract-a-value-of-cell-in-table-with-webbrowser?forum=vbgeneral
 
-            var marks = new List<MarksRowElement>();
+            var marks = new List<LessonMark>();
             foreach (HtmlElement el in tables)
             {
                 if (i++ != 1) continue; // skip first table
@@ -153,7 +152,7 @@ namespace Smarsy
             }
             _logger.Info($"Upserting lessons in database");
             _sqlServerLogic.UpsertLessons(marks.Select(x => x.LessonName).Distinct().ToList());
-            _newMarks = _sqlServerLogic.UpserStudentAllLessonsMarks(Student.Login, marks);
+            _sqlServerLogic.UpserStudentAllLessonsMarks(Student.Login, marks);
         }
 
 
@@ -189,8 +188,11 @@ namespace Smarsy
             return result;
         }
 
-        private  string GenerateEmailBodyForMarks(List<MarksRowElement> marks)
+        private  string GenerateEmailBodyForMarks()
         {
+
+            var marks = _sqlServerLogic.GetStudentMarkSummary(Student.StudentId);
+
             StringBuilder sb = new StringBuilder();
             foreach (var lesson in marks.OrderBy(x => x.LessonName).ToList())
             {
@@ -304,12 +306,7 @@ namespace Smarsy
             var emailTo = "keyboards4everyone@gmail.com";
             var subject = "Лизины оценки (" + DateTime.Now.ToShortDateString() + ")";
             var emailBody = new StringBuilder();
-
-            if (_newMarks.Any())
-            {
-                emailBody.Append(GenerateEmailBodyForMarks(_newMarks));
-
-            }
+            emailBody.Append(GenerateEmailBodyForMarks());
             emailBody.AppendLine();
             emailBody.AppendLine();
             emailBody.Append(GenerateEmailBodyForHomeWork(_sqlServerLogic.GetHomeWorkForFuture()));

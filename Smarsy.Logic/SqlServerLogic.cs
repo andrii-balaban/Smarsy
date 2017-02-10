@@ -68,22 +68,14 @@ namespace Smarsy.Logic
 
         }
 
-        public List<MarksRowElement> UpserStudentAllLessonsMarks(string login, List<MarksRowElement> marks)
+        public void UpserStudentAllLessonsMarks(string login, List<LessonMark> marks)
         {
-            var result = new List<MarksRowElement>();
-            int studentId = GetStudentIdBySmarsyLogin(login);
+            var studentId = GetStudentIdBySmarsyLogin(login);
             foreach (var mark in marks)
             {
                 var lessonId = GetLessonIdByName(mark.LessonName);
-                var lesson = new MarksRowElement
-                {
-                    LessonName = mark.LessonName,
-                    LessonId = lessonId,
-                    Marks = UpsertStudentMarks(studentId, lessonId, mark.Marks)
-                };
-                if (lesson.Marks.Any()) result.Add(lesson);
+                UpsertStudentMarks(studentId, lessonId, mark.Marks);
             }
-            return result;
         }
 
         public int GetLessonIdByLessonShortName(string lessonName)
@@ -257,6 +249,47 @@ namespace Smarsy.Logic
                 return result;
             }
 
+        }
+
+        public List<LessonMark> GetStudentMarkSummary(int studentId)
+        {
+            var result = new List<LessonMark>();
+            using (var objconnection = new SqlConnection(_stringConn))
+            {
+                objconnection.Open();
+                using (var objcmd = new SqlCommand("dbo.p_GetStudentMarkSummary", objconnection))
+                {
+                    objcmd.CommandType = CommandType.StoredProcedure;
+                    objcmd.Parameters.Add("@studentId", SqlDbType.VarChar, 50);
+                    objcmd.Parameters["@studentId"].Value = studentId;
+
+                    var marks = new List<StudentMark>();
+
+                    var res = objcmd.ExecuteReader();
+                    while (res.Read())
+                    {
+                        marks.Add(new StudentMark()
+                        {
+                            Date = Convert.ToDateTime(res["MarkDate"].ToString()),
+                            Mark = int.Parse(res["Mark"].ToString()),
+                            Reason = res["Reason"].ToString()
+                        });
+
+                        if (int.Parse(res["RowNum"].ToString()) == 1)
+                        {
+                            result.Add(new LessonMark()
+                            {
+                                LessonName = res["LessonName"].ToString(),
+                                LessonId = int.Parse(res["LessonId"].ToString()),
+                                Marks = marks
+                            });
+                            marks = new List<StudentMark>();
+                        }
+                    }
+
+                }
+            }
+            return result;
         }
     }
 }

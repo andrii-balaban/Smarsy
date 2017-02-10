@@ -80,6 +80,7 @@
     <Build Include="Tables\LessonLessonShort.sql" />
     <Build Include="Functions\fn_GetLessonIdByLessonShortName.sql" />
     <Build Include="Stored Procedures\p_GetHomeWorkForFuture.sql" />
+    <Build Include="Stored Procedures\p_GetStudentMarkSummary.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Smarsy.SQL.publish.xml" />

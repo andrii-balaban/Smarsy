@@ -36,5 +36,4 @@ BEGIN
         Reason
     FROM @NewMarks;
 
-	SELECT * FROM @NewMarks ORDER BY MarkDate DESC;
 END;
