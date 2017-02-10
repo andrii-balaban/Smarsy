@@ -12,7 +12,6 @@ namespace Smarsy
             if (CommandLine.Parser.Default.ParseArguments(args, options))
             {
                 var op = new Operational("90018970");
-                // op.NlogTest();
 
                 op.InitStudentFromDb();
                 op.LoginToSmarsy();

@@ -317,13 +317,5 @@ namespace Smarsy
             _logger.Info($"Sending email to {emailTo}");
             new EmailLogic().SendEmail(emailTo, subject, emailBody.ToString());
         }
-
-        public void NlogTest()
-        {
-            _logger.Info($"TTTTTEST");
-            Console.ReadLine();
-
-        }
-
     }
 }
