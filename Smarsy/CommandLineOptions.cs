@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using CommandLine;
+﻿using CommandLine;
 
 namespace Smarsy
 {
     public class CommandLineOptions
     {
-        [Option('m', "methods", Required = true, HelpText = "List of comma separated methods (actions) to be executed. ")]
+        [Option('m', "methods", Required = true, HelpText = "List of comma separated methods (actions) to be executed. "
+         )]
         public string Methods { get; set; }
     }
 }

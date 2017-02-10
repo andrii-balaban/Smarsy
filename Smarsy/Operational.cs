@@ -11,21 +11,15 @@ using SmarsyEntities;
 
 namespace Smarsy
 {
-
     public class Operational
     {
-
-
-
-        private static Logger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly SqlServerLogic _sqlServerLogic;
-        public Student Student { get; set; }
-        public WebBrowser SmarsyBrowser { get; set; }
 
         public Operational(string login)
         {
-            Student = new Student()
+            Student = new Student
             {
                 Login = login
             };
@@ -35,16 +29,19 @@ namespace Smarsy
             InitStudentFromDb();
         }
 
+        public Student Student { get; set; }
+        public WebBrowser SmarsyBrowser { get; set; }
+
 
         public void InitStudentFromDb()
         {
-            _logger.Info($"Getting student info from database");
+            Logger.Info($"Getting student info from database");
             Student = _sqlServerLogic.GetStudentBySmarsyLogin(Student.Login);
         }
 
         private void GoToLink(string url)
         {
-            _logger.Info($"Go to {url} page");
+            Logger.Info($"Go to {url} page");
             SmarsyBrowser.Navigate(url);
             WaitForPageToLoad();
         }
@@ -71,7 +68,7 @@ namespace Smarsy
 
         private void FillTextBoxByElementId(string elementId, string value)
         {
-            _logger.Info($"Entering text to the \"{elementId}\" element");
+            Logger.Info($"Entering text to the \"{elementId}\" element");
             if (SmarsyBrowser.Document == null) return;
             var element = SmarsyBrowser.Document.GetElementById(elementId);
             if (element != null)
@@ -106,14 +103,14 @@ namespace Smarsy
                 i++;
             }
 
-            var marks = new LessonMark()
+            var marks = new LessonMark
             {
                 LessonName = lessonName,
                 Marks = new List<StudentMark>()
             };
             foreach (HtmlElement mark in tmpMarks.GetElementsByTagName("a"))
             {
-                var studentMark = new StudentMark()
+                var studentMark = new StudentMark
                 {
                     Mark = int.Parse(mark.InnerText),
                     Reason = GetTextBetweenSubstrings(mark.GetAttribute("title"), "За что получена:", ""),
@@ -139,7 +136,6 @@ namespace Smarsy
             {
                 if (i++ != 1) continue; // skip first table
                 foreach (HtmlElement rows in el.All)
-                {
                     foreach (HtmlElement row in rows.GetElementsByTagName("tr"))
                     {
                         if (isHeader)
@@ -149,9 +145,8 @@ namespace Smarsy
                         }
                         marks.Add(ProcessMarksRow(row));
                     }
-                }
             }
-            _logger.Info($"Upserting lessons in database");
+            Logger.Info($"Upserting lessons in database");
             _sqlServerLogic.UpsertLessons(marks.Select(x => x.LessonName).Distinct().ToList());
             _sqlServerLogic.UpserStudentAllLessonsMarks(Student.Login, marks);
         }
@@ -163,7 +158,7 @@ namespace Smarsy
             var isFirst = true;
             foreach (var homeWork in hwList)
             {
-                if (isFirst && ((homeWork.HomeWorkDate - DateTime.Now)).TotalDays > 1)
+                if (isFirst && ((homeWork.HomeWorkDate - DateTime.Now).TotalDays > 1))
                 {
                     result.AppendLine();
                     result.AppendLine();
@@ -177,24 +172,24 @@ namespace Smarsy
             return result.ToString();
         }
 
-        private  string GetTeacherNameFromLessonWithTeacher(string lessonNameWithTeacher, string lessonName)
+        private string GetTeacherNameFromLessonWithTeacher(string lessonNameWithTeacher, string lessonName)
         {
             var result = lessonNameWithTeacher.Replace(lessonName, "").Replace("(", "").Replace(")", "").Trim();
             return result;
         }
 
-        private  string GetLessonNameFromLessonWithTeacher(string lessonNameWithTeacher)
+        private string GetLessonNameFromLessonWithTeacher(string lessonNameWithTeacher)
         {
-            var result = lessonNameWithTeacher.Substring(0, lessonNameWithTeacher.IndexOf("(", StringComparison.Ordinal) - 1);
+            var result = lessonNameWithTeacher.Substring(0,
+                lessonNameWithTeacher.IndexOf("(", StringComparison.Ordinal) - 1);
             return result;
         }
 
-        private  string GenerateEmailBodyForMarks()
+        private string GenerateEmailBodyForMarks()
         {
-
             var marks = _sqlServerLogic.GetStudentMarkSummary(Student.StudentId);
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             foreach (var lesson in marks.OrderBy(x => x.LessonName).ToList())
             {
                 sb.Append(lesson.LessonName);
@@ -212,7 +207,7 @@ namespace Smarsy
         }
 
 
-        private  HomeWork ProccessHomeWork(HtmlElement row)
+        private HomeWork ProccessHomeWork(HtmlElement row)
         {
             var result = new HomeWork();
             var i = 0;
@@ -225,14 +220,12 @@ namespace Smarsy
                 }
                 if (i == 1) result.HomeWorkDate = DateTime.Parse(ChangeDateFormat(cell.InnerText));
                 if (i++ == 2)
-                {
                     result.HomeWorkDescr = cell.InnerText;
-                }
             }
             return result;
         }
 
-        private  DateTime GetDateFromComment(string comment, bool isThisYear = true)
+        private DateTime GetDateFromComment(string comment, bool isThisYear = true)
         {
             var year = isThisYear ? DateTime.Now.Year.ToString() : (DateTime.Now.Year - 1).ToString();
             var dateWithText = GetTextBetweenSubstrings(comment, "Дата оценки: ", ";");
@@ -240,7 +233,6 @@ namespace Smarsy
 
             var result = ChangeDateFormat(date);
             return DateTime.Parse(result);
-
         }
 
         private static string ChangeDateFormat(string date)
@@ -267,9 +259,7 @@ namespace Smarsy
             var lessonId = 0;
 
             foreach (HtmlElement el in tables)
-            {
-
-                if (separateLessonNameFromHomeWork++ % 2 == 0)
+                if (separateLessonNameFromHomeWork++%2 == 0)
                 {
                     var lessonNameWithTeacher = el.InnerText.Replace("\r\n", "");
                     var lessonName = GetLessonNameFromLessonWithTeacher(lessonNameWithTeacher);
@@ -292,13 +282,12 @@ namespace Smarsy
                             var tmp = ProccessHomeWork(row);
                             tmp.LessonId = lessonId;
                             tmp.TeacherId = teacherId;
-                            if (tmp.HomeWorkDescr != null && !tmp.HomeWorkDescr.Trim().Equals(""))
+                            if ((tmp.HomeWorkDescr != null) && !tmp.HomeWorkDescr.Trim().Equals(""))
                                 homeWorks.Add(tmp);
                         }
                     }
                 }
-            }
-            _logger.Info($"Upserting homeworks in database");
+            Logger.Info($"Upserting homeworks in database");
             _sqlServerLogic.UpsertHomeWorks(homeWorks);
         }
 
@@ -312,7 +301,7 @@ namespace Smarsy
             emailBody.AppendLine();
             emailBody.Append(GenerateEmailBodyForHomeWork(_sqlServerLogic.GetHomeWorkForFuture()));
 
-            _logger.Info($"Sending email to {emailTo}");
+            Logger.Info($"Sending email to {emailTo}");
             new EmailLogic().SendEmail(emailTo, subject, emailBody.ToString());
         }
     }

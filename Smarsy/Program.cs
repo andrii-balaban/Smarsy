@@ -1,4 +1,5 @@
 ﻿using System;
+using CommandLine;
 
 namespace Smarsy
 {
@@ -9,7 +10,7 @@ namespace Smarsy
         {
             // -m "UpdateMarks,UpdateHomeWork,SendEmail"
             var options = new CommandLineOptions();
-            if (CommandLine.Parser.Default.ParseArguments(args, options))
+            if (Parser.Default.ParseArguments(args, options))
             {
                 var op = new Operational("90018970");
 
@@ -25,4 +26,3 @@ namespace Smarsy
         }
     }
 }
-
