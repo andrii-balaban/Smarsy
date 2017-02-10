@@ -32,6 +32,7 @@ namespace Smarsy
             SmarsyBrowser = new WebBrowser();
             _sqlServerLogic = new SqlServerLogic();
 
+            InitStudentFromDb();
         }
 
 
