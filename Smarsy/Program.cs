@@ -13,7 +13,6 @@ namespace Smarsy
             {
                 var op = new Operational("90018970");
                 op.InitStudentFromDb();
-                op.LoginToSmarsy();
 
                 var methods = options.Methods.Split(',');
                 foreach (var method in methods)
