@@ -3,12 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading;
     using System.Windows.Forms;
-    using NLog;
     using Extensions;
     using Logic;
+    using NLog;
     using SmarsyEntities;
 
     public class Operational
@@ -24,8 +23,7 @@
                 Login = login
             };
             SmarsyBrowser = new WebBrowser();
-            _sqlServerLogic = new SqlServerLogic();
-
+            _sqlServerLogic = new SqlServerLogic(login);
         }
 
         public Student Student { get; set; }
@@ -46,86 +44,12 @@
 
         public void UpdateAds()
         {
-            GoToLink($"http://smarsy.ua/private/parent.php?jsid=Announ&child={Student.SmarsyChildId}&tab=List");
-
-            if (SmarsyBrowser.Document == null)
-            {
-                return;
-            }
-
-            var tables = SmarsyBrowser.Document.GetElementsByTagName("table");
-            var i = 0;
-            var isHeader = true;
-            var ads = new List<Ad>();
-            foreach (HtmlElement el in tables)
-            {
-                if (i++ != 1)
-                {
-                    continue; // skip first table
-                }
-
-                foreach (HtmlElement rows in el.All)
-                {
-                    foreach (HtmlElement row in rows.GetElementsByTagName("tr"))
-                    {
-                        if (isHeader)
-                        {
-                            isHeader = false;
-                            continue;
-                        }
-
-                        ads.Add(ProcessAdsRow(row));
-                    }
-                }
-            }
-
-            Logger.Info("Upserting ads in database");
-            _sqlServerLogic.UpsertAds(ads);
+            GetTableObjectFromPage("http://smarsy.ua/private/parent.php?jsid=Announ&tab=List", ProcessAdsRow, "Ads", _sqlServerLogic.UpsertAds);
         }
 
         public void UpdateMarks()
         {
-            GoToLink($"http://smarsy.ua/private/parent.php?jsid=Diary&child={Student.SmarsyChildId}&tab=Mark");
-
-            if (SmarsyBrowser.Document == null)
-            {
-                return;
-            }
-
-            var tables = SmarsyBrowser.Document.GetElementsByTagName("table");
-            var i = 0;
-            var isHeader = true;
-            var marks = new List<LessonMark>();
-            foreach (HtmlElement el in tables)
-            {
-                if (i++ != 1)
-                {
-                    continue; // skip first table
-                }
-
-                foreach (HtmlElement rows in el.All)
-                {
-                    foreach (HtmlElement row in rows.GetElementsByTagName("tr"))
-                    {
-                        if (isHeader)
-                        {
-                            isHeader = false;
-                            continue;
-                        }
-
-                        marks.Add(ProcessMarksRow(row));
-                    }
-                }
-            }
-
-            Logger.Info("Upserting lessons in database");
-            _sqlServerLogic.UpsertLessons(marks.Select(x => x.LessonName).Distinct().ToList());
-            _sqlServerLogic.UpserStudentAllLessonsMarks(Student.Login, marks);
-        }
-
-        private void GoToLinkWithChild(string url)
-        {
-            GoToLink($"{url}&child={Student.SmarsyChildId}");
+            GetTableObjectFromPage("http://smarsy.ua/private/parent.php?jsid=Diary&tab=Mark", ProcessMarksRow, "Marks", _sqlServerLogic.UpserStudentAllLessonsMarks);
         }
 
         public void GetTableObjectFromPage<T>(string url, Func<HtmlElement, T> methodName, string entityNameForLog, Action<IList<T>> databaseProcessingMethodName,  bool isSkipHeader = true)
@@ -149,49 +73,12 @@
 
         public void UpdateStudents()
         {
-            GetTableObjectFromPage<Student>("http://smarsy.ua/private/parent.php?jsid=Grade&lesson=0&tab=List", ProcessStudentsRow, "Students", _sqlServerLogic.UpsertStudents);
+            GetTableObjectFromPage("http://smarsy.ua/private/parent.php?jsid=Grade&lesson=0&tab=List", ProcessStudentsRow, "Students", _sqlServerLogic.UpsertStudents);
         }
+
         public void UpdateRemarks()
         {
-            GetTableObjectFromPage<Remark>("http://smarsy.ua/private/parent.php?jsid=Remark&tab=List", ProcessRemarksRow, "Remarks", _sqlServerLogic.UpsertRemarks);
-        }
-
-        private Remark ProcessRemarksRow(HtmlElement row)
-        {
-            var remark = new Remark();
-            var i = 0;
-
-            foreach (HtmlElement element in row.GetElementsByTagName("td"))
-            {
-                if (i == 0)
-                {
-                    remark.RemarkDate = GetDateFromRussianFormat(element.InnerHtml);
-                }
-
-                if (i == 1)
-                {
-                    remark.LessonName = element.InnerHtml;
-                    remark.LessonId = _sqlServerLogic.GetLessonIdByName(remark.LessonName);
-                }
-
-                if (i == 2)
-                {
-                    remark.RemarkText = element.InnerHtml;
-                }
-
-                i++;
-            }
-
-            return remark;
-        }
-
-        private DateTime GetDateFromRussianFormat(string date)
-        {
-            var day = int.Parse(date.Substring(0, 2));
-            var month = int.Parse(date.Substring(3, 2));
-            var year = int.Parse(date.Substring(6, 4));
-
-            return new DateTime(year, month, day);
+            GetTableObjectFromPage("http://smarsy.ua/private/parent.php?jsid=Remark&tab=List", ProcessRemarksRow, "Remarks", _sqlServerLogic.UpsertRemarks);
         }
 
         public void UpdateHomeWork()
@@ -250,84 +137,71 @@
         public void SendEmail()
         {
             var emailTo = "keyboards4everyone@gmail.com";
-            var subject = "Лизины оценки (" + DateTime.Now.ToShortDateString() + ")";
-            var emailBody = new StringBuilder();
-
-            emailBody.Append(GenerateEmailForRemarks());
-            emailBody.AppendLine();
-            emailBody.AppendLine();
-
-            emailBody.Append(GenerateEmailForTomorrowBirthdays());
-            emailBody.AppendLine();
-            emailBody.AppendLine();
-
-            emailBody.Append(GenerateEmailForNewAds());
-            emailBody.AppendLine();
-            emailBody.AppendLine();
-
-            emailBody.Append(GenerateEmailBodyForMarks());
-            emailBody.AppendLine();
-            emailBody.AppendLine();
-
-            emailBody.Append(GenerateEmailBodyForHomeWork(_sqlServerLogic.GetHomeWorkForFuture()));
-
             Logger.Info($"Sending email to {emailTo}");
-            new EmailLogic().SendEmail(emailTo, subject, emailBody.ToString());
+            var ec = new EmailClient();
+            ec.SendEmail(Student.StudentId);
         }
 
-        private string GenerateEmailForRemarks()
+        internal string GetTextBetweenSubstrings(string text, string from, string to)
         {
-            var remarks = _sqlServerLogic.GetNewRemarks();
-            var result = new StringBuilder();
+            var charFrom = text.IndexOf(@from, StringComparison.Ordinal) + @from.Length;
+            var charTo = to.Length == 0 ? text.Length : text.LastIndexOf(to, StringComparison.Ordinal);
+            return text.Substring(charFrom, charTo - charFrom);
+        }
 
-            if (!remarks.Any()) return string.Empty;
+        internal DateTime GetDateFromText(string birthDate, int studentAge)
+        {
+            var year = DateTime.Now.Year - studentAge;
+            var month = GetMonthFromRussianName(GetMonthNameFromStringWithDayNumber(birthDate));
+            var day = GetDayFromStringWithDayNumber(birthDate);
+            var tmpDate = new DateTime(DateTime.Now.Year, month, day);
 
-            foreach (var rem in remarks)
+            if (DateTime.Now < tmpDate)
             {
-                result.AppendWithDashes(rem.RemarkDate.ToShortDateString());
-                result.AppendWithDashes(rem.LessonName);
-                result.AppendWithDashes(rem.RemarkText);
+                year--;
             }
 
-            return result.ToString();
+            return new DateTime(year, month, day);
         }
 
-        private string GenerateEmailForNewAds()
+        internal string GetTeacherNameFromLessonWithTeacher(string lessonNameWithTeacher, string lessonName)
         {
-            var ads = _sqlServerLogic.GetNewAds();
-            var result = new StringBuilder();
+            var result = lessonNameWithTeacher.Replace(lessonName, string.Empty).Replace("(", string.Empty).Replace(")", string.Empty).Trim();
+            return result;
+        }
 
-            if (!ads.Any()) return string.Empty;
-
-            foreach (var ad in ads)
+        internal string GetLessonNameFromLessonWithTeacher(string lessonNameWithTeacher)
+        {
+            if (!lessonNameWithTeacher.Contains("("))
             {
-                result.AppendWithDashes(ad.AdDate.ToShortDateString());
-                result.AppendWithNewLine(ad.AdText);
+                return lessonNameWithTeacher;
             }
 
-            return result.ToString();
+            var result = lessonNameWithTeacher.Substring(0, lessonNameWithTeacher.IndexOf("(", StringComparison.Ordinal) - 1);
+            return result;
         }
 
-        private static string GenerateEmailBodyForHomeWork(IEnumerable<HomeWork> homeWorks)
+        private static Ad ProcessAdsRow(HtmlElement row)
         {
-            var result = new StringBuilder();
-            var isFirst = true;
-            foreach (var homeWork in homeWorks)
+            var ad = new Ad();
+            var i = 1;
+
+            foreach (HtmlElement oneROw in row.GetElementsByTagName("td"))
             {
-                if (isFirst && ((homeWork.HomeWorkDate - DateTime.Now).TotalDays > 1))
+                if (i == 1)
                 {
-                    result.AppendLine();
-                    result.AppendLine();
-                    isFirst = false;
+                    ad.AdDate = DateTime.ParseExact(oneROw.InnerHtml, "dd.mm.yyyy", null);
                 }
 
-                result.AppendWithDashes(homeWork.HomeWorkDate.ToShortDateString());
-                result.AppendWithDashes(homeWork.LessonName);
-                result.AppendWithDashes(homeWork.TeacherName);
-                result.AppendWithNewLine(homeWork.HomeWorkDescr);
+                if (i == 2)
+                {
+                    ad.AdText = oneROw.InnerHtml;
+                }
+
+                i++;
             }
 
-            return result.ToString();
+            return ad;
         }
 
         private static string ChangeDateFormat(string date)
@@ -335,11 +209,91 @@
             return date.Substring(6, 4) + "." + date.Substring(3, 2) + "." + date.Substring(0, 2);
         }
 
-        internal string GetTextBetweenSubstrings(string text, string from, string to)
+        private static HomeWork ProccessHomeWork(HtmlElement row)
         {
-            var charFrom = text.IndexOf(from, StringComparison.Ordinal) + from.Length;
-            var charTo = to.Length == 0 ? text.Length : text.LastIndexOf(to, StringComparison.Ordinal);
-            return text.Substring(charFrom, charTo - charFrom);
+            var result = new HomeWork();
+            var i = 0;
+            foreach (HtmlElement cell in row.GetElementsByTagName("td"))
+            {
+                if (i == 1)
+                {
+                    result.HomeWorkDate = DateTime.Parse(ChangeDateFormat(cell.InnerText));
+                }
+
+                if (i++ == 2)
+                {
+                    result.HomeWorkDescr = cell.InnerText;
+                }
+            }
+
+            return result;
+        }
+
+        private static int GetMonthFromRussianName(string name)
+        {
+            switch (name)
+            {
+                case "января":
+                    return 1;
+                case "февраля":
+                    return 2;
+                case "марта":
+                    return 3;
+                case "апреля":
+                    return 4;
+                case "мая":
+                    return 5;
+                case "июня":
+                    return 6;
+                case "июля":
+                    return 7;
+                case "августа":
+                    return 8;
+                case "сентября":
+                    return 9;
+                case "октября":
+                    return 10;
+                case "ноября":
+                    return 11;
+                case "декабря":
+                    return 12;
+            }
+
+            return -1;
+        }
+
+        private Remark ProcessRemarksRow(HtmlElement row)
+        {
+            var remark = new Remark();
+            var i = 0;
+
+            foreach (HtmlElement element in row.GetElementsByTagName("td"))
+            {
+                if (i == 0)
+                {
+                    remark.RemarkDate = element.InnerHtml.ConvertDateToRussianFormat();
+                }
+
+                if (i == 1)
+                {
+                    remark.LessonName = element.InnerHtml;
+                    remark.LessonId = _sqlServerLogic.GetLessonIdByName(remark.LessonName);
+                }
+
+                if (i == 2)
+                {
+                    remark.RemarkText = element.InnerHtml;
+                }
+
+                i++;
+            }
+
+            return remark;
+        }
+
+        private void GoToLinkWithChild(string url)
+        {
+            GoToLink($"{url}&child={Student.SmarsyChildId}");
         }
 
         private void Login()
@@ -437,59 +391,16 @@
             return student;
         }
 
-        internal DateTime GetDateFromText(string birthDate, int studentAge)
-        {
-            var year = DateTime.Now.Year - studentAge;
-            var month = GetMonthFromRussianName(GetMonthNameFromStringWithDayNumber(birthDate));
-            var day = GetDayFromStringWithDayNumber(birthDate);
-            var tmpDate = new DateTime(DateTime.Now.Year, month, day);
-
-            if (DateTime.Now < tmpDate) year--;
-
-            return new DateTime(year, month, day);
-        }
-
         private int GetDayFromStringWithDayNumber(string date)
         {
             return int.Parse(date.Substring(0, 2).Trim());
         }
+
         private string GetMonthNameFromStringWithDayNumber(string date)
         {
             return date.Substring(2, date.Length - 2).Trim();
         }
-
-        private int GetMonthFromRussianName(string name)
-        {
-            switch (name)
-            {
-                case "января":
-                    return 1;
-                case "февраля":
-                    return 2;
-                case "марта":
-                    return 3;
-                case "апреля":
-                    return 4;
-                case "мая":
-                    return 5;
-                case "июня":
-                    return 6;
-                case "июля":
-                    return 7;
-                case "августа":
-                    return 8;
-                case "сентября":
-                    return 9;
-                case "октября":
-                    return 10;
-                case "ноября":
-                    return 11;
-                case "декабря":
-                    return 12;
-            }
-            return -1;
-        }
-
+        
         private LessonMark ProcessMarksRow(HtmlElement row)
         {
             var i = 0;
@@ -530,79 +441,6 @@
             return marks;
         }
 
-        internal string GetTeacherNameFromLessonWithTeacher(string lessonNameWithTeacher, string lessonName)
-        {
-            var result = lessonNameWithTeacher.Replace(lessonName, string.Empty).Replace("(", string.Empty).Replace(")", string.Empty).Trim();
-            return result;
-        }
-
-        internal string GetLessonNameFromLessonWithTeacher(string lessonNameWithTeacher)
-        {
-            if (!lessonNameWithTeacher.Contains("(")) return lessonNameWithTeacher;
-            var result = lessonNameWithTeacher.Substring(0, lessonNameWithTeacher.IndexOf("(", StringComparison.Ordinal) - 1);
-            return result;
-        }
-
-        private string GenerateEmailBodyForMarks()
-        {
-            var marks = _sqlServerLogic.GetStudentMarkSummary(Student.StudentId);
-
-            var sb = new StringBuilder();
-            foreach (var lesson in marks.OrderBy(x => x.LessonName).ToList())
-            {
-                sb.Append(lesson.LessonName);
-                sb.Append(":");
-                sb.Append(Environment.NewLine);
-                foreach (var mark in lesson.Marks.OrderByDescending(x => x.Date))
-                {
-                    sb.AppendWithDashes(mark.Date.ToShortDateString());
-                    sb.AppendWithDashes(mark.Mark);
-                    sb.AppendWithNewLine(mark.Reason);
-                }
-
-                sb.Append(Environment.NewLine);
-            }
-
-            return sb.ToString();
-        }
-
-        private string GenerateEmailForTomorrowBirthdays()
-        {
-            var birthdayStudents = _sqlServerLogic.GetStudentsWithBirthdayTomorrow();
-            if (!birthdayStudents.Any()) return string.Empty;
-
-            var sb = new StringBuilder("Завтра день рождения у:");
-            sb.AppendLine();
-
-            foreach (var birthday in birthdayStudents)
-            {
-                sb.AppendWithDashes(birthday.Name);    
-                sb.AppendWithNewLine(DateTime.Now.Year - birthday.BirthDate.Year);
-            }
-
-            return sb.ToString();
-        }
-
-        private HomeWork ProccessHomeWork(HtmlElement row)
-        {
-            var result = new HomeWork();
-            var i = 0;
-            foreach (HtmlElement cell in row.GetElementsByTagName("td"))
-            {
-                if (i == 1)
-                {
-                    result.HomeWorkDate = DateTime.Parse(ChangeDateFormat(cell.InnerText));
-                }
-
-                if (i++ == 2)
-                {
-                    result.HomeWorkDescr = cell.InnerText;
-                }
-            }
-
-            return result;
-        }
-
         private DateTime GetDateFromComment(string comment, bool isThisYear = true)
         {
             var year = isThisYear ? DateTime.Now.Year.ToString() : (DateTime.Now.Year - 1).ToString();
@@ -612,29 +450,5 @@
             var result = ChangeDateFormat(date);
             return DateTime.Parse(result);
         }
-
-        private Ad ProcessAdsRow(HtmlElement row)
-        {
-            var ad = new Ad();
-            var i = 1;
-
-            foreach (HtmlElement adRow in row.GetElementsByTagName("td"))
-            {
-
-                if (i == 1)
-                {
-                    ad.AdDate = DateTime.ParseExact(adRow.InnerHtml, "dd.mm.yyyy", null);
-                }
-
-                if (i == 2)
-                {
-                    ad.AdText = adRow.InnerHtml;
-                }
-
-                i++;
-            }
-
-            return ad;
-        }
-    }
+}
 }

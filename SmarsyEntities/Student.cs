@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace SmarsyEntities
+﻿namespace SmarsyEntities
 {
+    using System;
+
     public class Student
     {
         public Student()

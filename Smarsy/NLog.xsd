@@ -641,7 +641,7 @@
     <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element name="ignoreCase" minOccurs="0" maxOccurs="1" type="xs:boolean" />
       <xs:element name="regex" minOccurs="0" maxOccurs="1" type="xs:string" />
-      <xs:element name="text" minOccurs="0" maxOccurs="1" type="xs:string" />
+      <xs:element name="date" minOccurs="0" maxOccurs="1" type="xs:string" />
       <xs:element name="wholeWords" minOccurs="0" maxOccurs="1" type="xs:boolean" />
       <xs:element name="compileRegex" minOccurs="0" maxOccurs="1" type="xs:boolean" />
       <xs:element name="backgroundColor" minOccurs="0" maxOccurs="1" type="NLog.Targets.ConsoleOutputColor" />
@@ -649,17 +649,17 @@
     </xs:choice>
     <xs:attribute name="ignoreCase" type="xs:boolean">
       <xs:annotation>
-        <xs:documentation>Indicates whether to ignore case when comparing texts.</xs:documentation>
+        <xs:documentation>Indicates whether to ignore case when comparing dates.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attribute name="regex" type="xs:string">
       <xs:annotation>
-        <xs:documentation>Regular expression to be matched. You must specify either text or regex.</xs:documentation>
+        <xs:documentation>Regular expression to be matched. You must specify either date or regex.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="text" type="xs:string">
+    <xs:attribute name="date" type="xs:string">
       <xs:annotation>
-        <xs:documentation>Text to be matched. You must specify either text or regex.</xs:documentation>
+        <xs:documentation>Text to be matched. You must specify either date or regex.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attribute name="wholeWords" type="xs:boolean">
@@ -847,7 +847,7 @@
       <xs:element name="connectionString" minOccurs="0" maxOccurs="1" type="Layout" />
       <xs:element name="ignoreFailures" minOccurs="0" maxOccurs="1" type="xs:boolean" />
       <xs:element name="parameter" minOccurs="0" maxOccurs="unbounded" type="NLog.Targets.DatabaseParameterInfo" />
-      <xs:element name="text" minOccurs="0" maxOccurs="1" type="Layout" />
+      <xs:element name="date" minOccurs="0" maxOccurs="1" type="Layout" />
     </xs:choice>
     <xs:attribute name="commandType" type="System.Data.CommandType">
       <xs:annotation>
@@ -864,9 +864,9 @@
         <xs:documentation>Indicates whether to ignore failures.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="text" type="SimpleLayoutAttribute">
+    <xs:attribute name="date" type="SimpleLayoutAttribute">
       <xs:annotation>
-        <xs:documentation>Command text.</xs:documentation>
+        <xs:documentation>Command date.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
@@ -1403,7 +1403,7 @@
         </xs:attribute>
         <xs:attribute name="domain" type="xs:string">
           <xs:annotation>
-            <xs:documentation>Windows domain name to change context to.</xs:documentation>
+            <xs:documentation>Windows domain name to change condate to.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="impersonationLevel" type="NLog.Targets.Wrappers.SecurityImpersonationLevel">
@@ -1433,7 +1433,7 @@
         </xs:attribute>
         <xs:attribute name="userName" type="xs:string">
           <xs:annotation>
-            <xs:documentation>Username to change context to.</xs:documentation>
+            <xs:documentation>Username to change condate to.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="optimizeBufferReuse" type="xs:boolean">
@@ -1631,7 +1631,7 @@
         </xs:attribute>
         <xs:attribute name="html" type="xs:boolean">
           <xs:annotation>
-            <xs:documentation>Indicates whether to send message as HTML instead of plain text.</xs:documentation>
+            <xs:documentation>Indicates whether to send message as HTML instead of plain date.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="encoding" type="xs:string">
@@ -1809,7 +1809,7 @@
         </xs:attribute>
         <xs:attribute name="encoding" type="xs:string">
           <xs:annotation>
-            <xs:documentation>Encoding to be used when writing text to the queue.</xs:documentation>
+            <xs:documentation>Encoding to be used when writing date to the queue.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="useXmlEncoding" type="xs:boolean">
@@ -2199,7 +2199,7 @@
         </xs:attribute>
         <xs:attribute name="counterHelp" type="xs:string">
           <xs:annotation>
-            <xs:documentation>Counter help text.</xs:documentation>
+            <xs:documentation>Counter help date.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="counterName" type="xs:string">
@@ -2735,11 +2735,11 @@
     <xs:complexContent>
       <xs:extension base="Layout">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
-          <xs:element name="text" minOccurs="0" maxOccurs="1" type="xs:string" />
+          <xs:element name="date" minOccurs="0" maxOccurs="1" type="xs:string" />
         </xs:choice>
-        <xs:attribute name="text" type="xs:string">
+        <xs:attribute name="date" type="xs:string">
           <xs:annotation>
-            <xs:documentation>Layout text.</xs:documentation>
+            <xs:documentation>Layout date.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
       </xs:extension>

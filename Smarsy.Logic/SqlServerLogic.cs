@@ -11,6 +11,16 @@
         private readonly string _stringConn =
             "Data Source = localhost;Initial Catalog=Smarsy; Integrated Security = True; Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout = 60; Encrypt=False;TrustServerCertificate=True";
         ////"Data Source=(localdb)\\ProjectsV13;Initial Catalog=Smarsy;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True";
+        private string _smarsyLogin;
+
+        public SqlServerLogic(string smarsyLogin)
+        {
+            _smarsyLogin = smarsyLogin;
+        }
+
+        public SqlServerLogic()
+        {
+        }
 
         public void UpsertLessons(List<string> lessons)
         {
@@ -20,7 +30,7 @@
             }
         }
 
-        public void UpsertAds(List<Ad> ads)
+        public void UpsertAds(IList<Ad> ads)
         {
             foreach (var ad in ads)
             {
@@ -36,9 +46,9 @@
             }
         }
 
-        public void UpserStudentAllLessonsMarks(string login, List<LessonMark> marks)
+        public void UpserStudentAllLessonsMarks(IList<LessonMark> marks)
         {
-            var studentId = GetStudentIdBySmarsyLogin(login);
+            var studentId = GetStudentIdBySmarsyLogin(_smarsyLogin);
             foreach (var mark in marks)
             {
                 var lessonId = GetLessonIdByName(mark.LessonName);
