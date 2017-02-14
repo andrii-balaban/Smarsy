@@ -19,23 +19,11 @@
             var subject = "Лизины оценки (" + DateTime.Now.ToShortDateString() + ")";
             var emailBody = new StringBuilder();
 
-            emailBody.Append(GenerateEmailForRemarks());
-            emailBody.AppendLine();
-            emailBody.AppendLine();
-
-            emailBody.Append(GenerateEmailForTomorrowBirthdays());
-            emailBody.AppendLine();
-            emailBody.AppendLine();
-
-            emailBody.Append(GenerateEmailForNewAds());
-            emailBody.AppendLine();
-            emailBody.AppendLine();
-
-            emailBody.Append(GenerateEmailBodyForMarks(studentId));
-            emailBody.AppendLine();
-            emailBody.AppendLine();
-
-            emailBody.Append(GenerateEmailBodyForHomeWork(_sqlServerLogic.GetHomeWorkForFuture()));
+            emailBody.AppendWithDoubleBrTag(GenerateEmailForRemarks());
+            emailBody.AppendWithDoubleBrTag(GenerateEmailForTomorrowBirthdays());
+            emailBody.AppendWithDoubleBrTag(GenerateEmailForNewAds());
+            emailBody.AppendWithDoubleBrTag(GenerateEmailBodyForMarks(studentId));
+            emailBody.AppendWithDoubleBrTag(GenerateEmailBodyForHomeWork());
 
             SendEmail(emailToList, subject, emailBody.ToString(), emailFrom, fromPassword);
         }
@@ -66,27 +54,41 @@
                     message.To.Add(mail);
                 }
 
+                message.IsBodyHtml = true;
                 smtp.Send(message);
             }
         }
 
-        private static string GenerateEmailBodyForHomeWork(IEnumerable<HomeWork> homeWorks)
+        private string GenerateEmailBodyForHomeWork()
         {
-            var result = new StringBuilder();
+            var homeWorks = _sqlServerLogic.GetHomeWorkForFuture();
+
+            if (!homeWorks.Any())
+            {
+                return string.Empty;
+            }
+
+            var result = new StringBuilder("Домашняя работа");
             var isFirst = true;
+            result.Append("<table border=\"1\">");
+
             foreach (var homeWork in homeWorks)
             {
                 if (isFirst && ((homeWork.HomeWorkDate - DateTime.Now).TotalDays > 1))
                 {
-                    result.AppendLine();
-                    result.AppendLine();
+                    result.AppendWithDoubleBrTag(string.Empty);
                     isFirst = false;
+                    result.AppendWithDoubleBrTag("</table>");
+                    result.Append("Задания на другие дни");
+                    result.Append("<table border=\"1\">");
                 }
 
-                result.AppendWithDashes(homeWork.HomeWorkDate.ToShortDateString());
-                result.AppendWithDashes(homeWork.LessonName);
-                result.AppendWithDashes(homeWork.TeacherName);
-                result.AppendWithNewLine(homeWork.HomeWorkDescr);
+                result.Append("<tr>");
+                result.AppendSurroundTd(homeWork.HomeWorkDate.ToShortDateString());
+                result.AppendSurroundTd(homeWork.LessonName);
+                result.AppendSurroundTd(homeWork.TeacherName);
+                result.AppendSurroundTd(homeWork.HomeWorkDescr);
+                result.Append("</tr>");
             }
 
             return result.ToString();
@@ -100,34 +102,44 @@
                 return string.Empty;
             }
 
-            var sb = new StringBuilder("Завтра день рождения у:");
-            sb.AppendLine();
+            var result = new StringBuilder("Завтра день рождения у:");
+            result.Append("<table border=\"1\">");
 
             foreach (var birthday in birthdayStudents)
             {
-                sb.AppendWithDashes(birthday.Name);
-                sb.AppendWithNewLine(DateTime.Now.Year - birthday.BirthDate.Year);
+                result.Append("<tr>");
+                result.AppendSurroundTd(birthday.Name);
+                result.AppendSurroundTd(DateTime.Now.Year - birthday.BirthDate.Year);
+                result.Append("</tr>");
             }
 
-            return sb.ToString();
+            result.Append("</table>");
+
+            return result.ToString();
         }
 
         private string GenerateEmailForRemarks()
         {
             var remarks = _sqlServerLogic.GetNewRemarks();
-            var result = new StringBuilder();
 
             if (!remarks.Any())
             {
                 return string.Empty;
             }
 
+            var result = new StringBuilder("Замечания");
+            result.Append("<table border=\"1\">");
+
             foreach (var rem in remarks)
             {
-                result.AppendWithDashes(rem.RemarkDate.ToShortDateString());
-                result.AppendWithDashes(rem.LessonName);
-                result.AppendWithDashes(rem.RemarkText);
+                result.Append("<tr>");
+                result.AppendSurroundTd(rem.RemarkDate.ToShortDateString());
+                result.AppendSurroundTd(rem.LessonName);
+                result.AppendSurroundTd(rem.RemarkText);
+                result.Append("</tr>");
             }
+
+            result.Append("</table>");
 
             return result.ToString();
         }
@@ -135,43 +147,54 @@
         private string GenerateEmailForNewAds()
         {
             var ads = _sqlServerLogic.GetNewAds();
-            var result = new StringBuilder();
 
             if (!ads.Any())
             {
                 return string.Empty;
             }
 
+            var result = new StringBuilder("Объявления");
+            result.Append("<table border=\"1\">");
+
             foreach (var ad in ads)
             {
-                result.AppendWithDashes(ad.AdDate.ToShortDateString());
-                result.AppendWithNewLine(ad.AdText);
+                result.Append("<tr>");
+                result.AppendSurroundTd(ad.AdDate.ToShortDateString());
+                result.AppendSurroundTd(ad.AdText);
+                result.Append("</tr>");
             }
+            result.Append("</table>");
 
             return result.ToString();
         }
 
         private string GenerateEmailBodyForMarks(int studentId)
         {
-            var marks = _sqlServerLogic.GetStudentMarkSummary(studentId);
-
-            var sb = new StringBuilder();
-            foreach (var lesson in marks.OrderBy(x => x.LessonName).ToList())
+            List<LessonMark> marks = _sqlServerLogic.GetStudentMarkSummary(studentId);
+            if (!marks.Any())
             {
-                sb.Append(lesson.LessonName);
-                sb.Append(":");
-                sb.Append(Environment.NewLine);
-                foreach (var mark in lesson.Marks.OrderByDescending(x => x.Date))
-                {
-                    sb.AppendWithDashes(mark.Date.ToShortDateString());
-                    sb.AppendWithDashes(mark.Mark);
-                    sb.AppendWithNewLine(mark.Reason);
-                }
-
-                sb.Append(Environment.NewLine);
+                return string.Empty;
             }
 
-            return sb.ToString();
+            var result = new StringBuilder("Оценки");
+            result.Append("<table border=\"1\">");
+
+            foreach (var lesson in marks.OrderBy(x => x.LessonName).ToList())
+            {
+
+                foreach (var mark in lesson.Marks.OrderByDescending(x => x.Date))
+                {
+                    result.Append("<tr>");
+                    result.AppendSurroundTd(lesson.LessonName);
+                    result.AppendSurroundTd(mark.Date.ToShortDateString());
+                    result.AppendSurroundTd(mark.Mark);
+                    result.AppendSurroundTd(mark.Reason);
+                    result.Append("</tr>");
+                }
+            }
+            result.Append("</table>");
+
+            return result.ToString();
         }
     }
 }
