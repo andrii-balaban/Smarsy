@@ -14,9 +14,8 @@
     {
         private readonly SqlServerLogic _sqlServerLogic = new SqlServerLogic();
 
-        public void SendEmail(int studentId)
+        public void SendEmail(int studentId, List<string> emailToList,  string emailFrom, string fromPassword)
         {
-            var emailTo = "keyboards4everyone@gmail.com";
             var subject = "Лизины оценки (" + DateTime.Now.ToShortDateString() + ")";
             var emailBody = new StringBuilder();
 
@@ -38,14 +37,12 @@
 
             emailBody.Append(GenerateEmailBodyForHomeWork(_sqlServerLogic.GetHomeWorkForFuture()));
 
-            SendEmail(emailTo, subject, emailBody.ToString());
+            SendEmail(emailToList, subject, emailBody.ToString(), emailFrom, fromPassword);
         }
 
-        public void SendEmail(string emailTo, string subject, string body)
+        public void SendEmail(List<string> emailTo, string subject, string body, string emailFrom, string fromPassword)
         {
-            var fromAddress = new MailAddress("olxsender@gmail.com", "Smarsy наблюдатель");
-            var toAddress = new MailAddress(emailTo, "Оценки");
-            var fromPassword = "1mCr3at1nG$3cur3P4$$";
+            var fromAddress = new MailAddress(emailFrom, "Smarsy наблюдатель");
 
             var smtp = new SmtpClient
             {
@@ -56,12 +53,19 @@
                 UseDefaultCredentials = false,
                 Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
             };
-            using (var message = new MailMessage(fromAddress, toAddress)
+
+            using (var message = new MailMessage()
             {
+                From = fromAddress,
                 Subject = subject,
                 Body = body
             })
             {
+                foreach (var mail in emailTo)
+                {
+                    message.To.Add(mail);
+                }
+
                 smtp.Send(message);
             }
         }

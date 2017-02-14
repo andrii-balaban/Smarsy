@@ -134,12 +134,11 @@
             _sqlServerLogic.UpsertHomeWorks(homeWorks);
         }
 
-        public void SendEmail()
+        public void SendEmail(List<string> emailToList, string emailFrom, string password)
         {
-            var emailTo = "keyboards4everyone@gmail.com";
-            Logger.Info($"Sending email to {emailTo}");
+            Logger.Info($"Sending email to {string.Join(",", emailToList)}");
             var ec = new EmailClient();
-            ec.SendEmail(Student.StudentId);
+            ec.SendEmail(Student.StudentId, emailToList, emailFrom, password);
         }
 
         internal string GetTextBetweenSubstrings(string text, string from, string to)

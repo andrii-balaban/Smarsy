@@ -1,4 +1,6 @@
-﻿namespace Smarsy
+﻿using System.Linq;
+
+namespace Smarsy
 {
     using System;
     using CommandLine;
@@ -11,10 +13,10 @@
             var options = new CommandLineOptions();
             if (Parser.Default.ParseArguments(args, options))
             {
-                var op = new Operational("90018970");
+                var op = new Operational(options.SmarsyLogin);
                 op.InitStudentFromDb();
-                //// options.Methods = "LoginToSmarsy,UpdateMarks,UpdateHomeWork,UpdateAds,UpdateStudents,UpdateRemarks,SendEmail";
-                options.Methods = "LoginToSmarsy,UpdateMarks,SendEmail";
+                //// options.Methods = "LoginToSmarsy,UpdateMarks,UpdateHomeWork,UpdateAds,UpdateStudents,UpdateRemarks";
+                options.Methods = "LoginToSmarsy,UpdateAds";
 
                 var methods = options.Methods.Split(',');
                 foreach (var method in methods)
@@ -30,6 +32,10 @@
                         throw new NotImplementedException();
                     }
                 }
+
+                var emailToList = options.EmailsTo.Split(',');
+
+                op.SendEmail(emailToList.ToList(), options.EmailsFrom, options.EmailPassword);
             }
         }
     }
