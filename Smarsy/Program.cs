@@ -13,8 +13,9 @@
             {
                 var op = new Operational("90018970");
                 op.InitStudentFromDb();
-                //options.Methods = "LoginToSmarsy,UpdateMarks,UpdateHomeWork,UpdateAds,UpdateStudents,SendEmail";
-                options.Methods = "LoginToSmarsy,UpdateStudents,SendEmail";
+                //options.Methods = "LoginToSmarsy,UpdateMarks,UpdateHomeWork,UpdateAds,UpdateStudents,UpdateRemarks,SendEmail";
+                options.Methods = "LoginToSmarsy,UpdateMarks,UpdateHomeWork,UpdateAds,UpdateStudents,UpdateRemarks,SendEmail";
+
                 var methods = options.Methods.Split(',');
                 foreach (var method in methods)
                 {

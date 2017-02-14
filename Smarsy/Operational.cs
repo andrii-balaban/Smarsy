@@ -151,6 +151,48 @@
         {
             GetTableObjectFromPage<Student>("http://smarsy.ua/private/parent.php?jsid=Grade&lesson=0&tab=List", ProcessStudentsRow, "Students", _sqlServerLogic.UpsertStudents);
         }
+        public void UpdateRemarks()
+        {
+            GetTableObjectFromPage<Remark>("http://smarsy.ua/private/parent.php?jsid=Remark&tab=List", ProcessRemarksRow, "Remarks", _sqlServerLogic.UpsertRemarks);
+        }
+
+        private Remark ProcessRemarksRow(HtmlElement row)
+        {
+            var remark = new Remark();
+            var i = 0;
+
+            foreach (HtmlElement element in row.GetElementsByTagName("td"))
+            {
+                if (i == 0)
+                {
+                    remark.RemarkDate = GetDateFromRussianFormat(element.InnerHtml);
+                }
+
+                if (i == 1)
+                {
+                    remark.LessonName = element.InnerHtml;
+                    remark.LessonId = _sqlServerLogic.GetLessonIdByName(remark.LessonName);
+                }
+
+                if (i == 2)
+                {
+                    remark.RemarkText = element.InnerHtml;
+                }
+
+                i++;
+            }
+
+            return remark;
+        }
+
+        private DateTime GetDateFromRussianFormat(string date)
+        {
+            var day = int.Parse(date.Substring(0, 2));
+            var month = int.Parse(date.Substring(3, 2));
+            var year = int.Parse(date.Substring(6, 4));
+
+            return new DateTime(year, month, day);
+        }
 
         public void UpdateHomeWork()
         {
@@ -204,61 +246,16 @@
             Logger.Info("Upserting homeworks in database");
             _sqlServerLogic.UpsertHomeWorks(homeWorks);
         }
-        //public void UpdateRemarks()
-        //{
-        //    GoToLink($"http://smarsy.ua/private/parent.php?jsid=Remark&child={Student.SmarsyChildId}&tab=List");
-        //    if (SmarsyBrowser.Document == null)
-        //    {
-        //        return;
-        //    }
-
-        //    var remarks = new List<Remark>();
-        //    var tables = SmarsyBrowser.Document.GetElementsByTagName("table");
-
-        //    foreach (HtmlElement el in tables)
-        //    {
-        //        if (separateLessonNameFromHomeWork++ % 2 == 0)
-        //        {
-        //            var lessonNameWithTeacher = el.InnerText.Replace("\r\n", string.Empty);
-        //            var lessonName = GetLessonNameFromLessonWithTeacher(lessonNameWithTeacher);
-        //            var teacherName = GetTeacherNameFromLessonWithTeacher(lessonNameWithTeacher, lessonName);
-        //            teacherId = _sqlServerLogic.InsertTeacherIfNotExists(teacherName);
-        //            lessonId = _sqlServerLogic.GetLessonIdByLessonShortName(lessonName);
-        //        }
-        //        else
-        //        {
-        //            foreach (HtmlElement rows in el.All)
-        //            {
-        //                var isHeader = true;
-        //                foreach (HtmlElement row in rows.GetElementsByTagName("tr"))
-        //                {
-        //                    if (isHeader)
-        //                    {
-        //                        isHeader = false;
-        //                        continue;
-        //                    }
-
-        //                    var tmp = ProccessHomeWork(row);
-        //                    tmp.LessonId = lessonId;
-        //                    tmp.TeacherId = teacherId;
-        //                    if ((tmp.HomeWorkDescr != null) && !tmp.HomeWorkDescr.Trim().Equals(string.Empty))
-        //                    {
-        //                        remarks.Add(tmp);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    Logger.Info("Upserting homeworks in database");
-        //    _sqlServerLogic.UpsertHomeWorks(remarks);
-        //}
 
         public void SendEmail()
         {
             var emailTo = "keyboards4everyone@gmail.com";
             var subject = "Лизины оценки (" + DateTime.Now.ToShortDateString() + ")";
             var emailBody = new StringBuilder();
+
+            emailBody.Append(GenerateEmailForRemarks());
+            emailBody.AppendLine();
+            emailBody.AppendLine();
 
             emailBody.Append(GenerateEmailForTomorrowBirthdays());
             emailBody.AppendLine();
@@ -278,6 +275,23 @@
             new EmailLogic().SendEmail(emailTo, subject, emailBody.ToString());
         }
 
+        private string GenerateEmailForRemarks()
+        {
+            var remarks = _sqlServerLogic.GetNewRemarks();
+            var result = new StringBuilder();
+
+            if (!remarks.Any()) return string.Empty;
+
+            foreach (var rem in remarks)
+            {
+                result.AppendWithDashes(rem.RemarkDate.ToShortDateString());
+                result.AppendWithDashes(rem.LessonName);
+                result.AppendWithDashes(rem.RemarkText);
+            }
+
+            return result.ToString();
+        }
+
         private string GenerateEmailForNewAds()
         {
             var ads = _sqlServerLogic.GetNewAds();
@@ -287,7 +301,7 @@
 
             foreach (var ad in ads)
             {
-                result.AppendWithDashes(ad.AdDate);
+                result.AppendWithDashes(ad.AdDate.ToShortDateString());
                 result.AppendWithNewLine(ad.AdText);
             }
 

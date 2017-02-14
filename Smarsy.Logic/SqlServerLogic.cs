@@ -176,6 +176,33 @@
             }
         }
 
+        public List<Remark> GetNewRemarks()
+        {
+            var remarks = new List<Remark>();
+            using (var objconnection = new SqlConnection(_stringConn))
+            {
+                objconnection.Open();
+                using (var objcmd = new SqlCommand("dbo.p_GetNewRemarks", objconnection))
+                {
+                    objcmd.CommandType = CommandType.StoredProcedure;
+
+                    var res = objcmd.ExecuteReader();
+                    while (res.Read())
+                    {
+                        remarks.Add(new Remark()
+                        {
+                            LessonId = int.Parse(res["LessonId"].ToString()),
+                            LessonName = res["LessonName"].ToString(),
+                            RemarkDate = Convert.ToDateTime(res["RemarkDate"].ToString()),
+                            RemarkText = res["RemarkText"].ToString()
+                        });
+                    }
+                }
+
+                return remarks;
+            }
+        }
+        
         public List<HomeWork> GetHomeWorkForFuture()
         {
             var result = new List<HomeWork>();
@@ -250,6 +277,34 @@
             foreach (var student in students)
             {
                 UpsertStudent(student);
+            }
+        }
+
+        public void UpsertRemarks(IList<Remark> remarks)
+        {
+            foreach (var remark in remarks)
+            {
+                UpsertRemark(remark);
+            }
+        }
+
+        private void UpsertRemark(Remark remark)
+        {
+            using (var objconnection = new SqlConnection(_stringConn))
+            {
+                objconnection.Open();
+                using (var objcmd = new SqlCommand("dbo.p_UpsertRemark", objconnection))
+                {
+                    objcmd.CommandType = CommandType.StoredProcedure;
+                    objcmd.Parameters.Add("@remarkText", SqlDbType.NVarChar, -1);
+                    objcmd.Parameters["@remarkText"].Value = remark.RemarkText;
+                    objcmd.Parameters.Add("@lessonId", SqlDbType.Int);
+                    objcmd.Parameters["@lessonId"].Value = remark.LessonId;
+                    objcmd.Parameters.Add("@remarkDate", SqlDbType.Date);
+                    objcmd.Parameters["@remarkDate"].Value = remark.RemarkDate;
+
+                    objcmd.ExecuteNonQuery();
+                }
             }
         }
 

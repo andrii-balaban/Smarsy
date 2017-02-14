@@ -87,6 +87,9 @@
     <Build Include="Tables\Ad.sql" />
     <Build Include="Stored Procedures\p_InsertAdsIfNotExists.sql" />
     <Build Include="Stored Procedures\p_GetNewAds.sql" />
+    <Build Include="Stored Procedures\p_UpsertRemark.sql" />
+    <Build Include="Tables\Remark.sql" />
+    <Build Include="Stored Procedures\p_GetNewRemarks.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Smarsy.SQL.publish.xml" />
