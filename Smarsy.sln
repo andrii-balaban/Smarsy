@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smarsy.Logic", "Smarsy.Logi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmarsyEntities", "SmarsyEntities\SmarsyEntities.csproj", "{3F0E9805-2DF4-447F-9F8A-57648E2E12EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smarsy.Test", "Smarsy.Test\Smarsy.Test.csproj", "{7B8F09CF-56CD-4CF7-9E17-EC82B9D6167E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{3F0E9805-2DF4-447F-9F8A-57648E2E12EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F0E9805-2DF4-447F-9F8A-57648E2E12EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F0E9805-2DF4-447F-9F8A-57648E2E12EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B8F09CF-56CD-4CF7-9E17-EC82B9D6167E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B8F09CF-56CD-4CF7-9E17-EC82B9D6167E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B8F09CF-56CD-4CF7-9E17-EC82B9D6167E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B8F09CF-56CD-4CF7-9E17-EC82B9D6167E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

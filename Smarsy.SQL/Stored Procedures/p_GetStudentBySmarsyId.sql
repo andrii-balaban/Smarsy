@@ -7,7 +7,8 @@ BEGIN
         s.Name,
         s.Login,
         s.Password,
-        s.SmarsyChildId
+        s.SmarsyChildId,
+		s.BirthDate
     FROM dbo.Student AS s
     WHERE s.Login = @login;
 

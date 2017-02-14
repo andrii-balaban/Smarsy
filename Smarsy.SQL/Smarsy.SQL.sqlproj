@@ -61,6 +61,7 @@
     <Folder Include="Stored Procedures" />
     <Folder Include="UDT" />
     <Folder Include="Functions" />
+    <Folder Include="Scripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Student.sql" />
@@ -81,9 +82,17 @@
     <Build Include="Functions\fn_GetLessonIdByLessonShortName.sql" />
     <Build Include="Stored Procedures\p_GetHomeWorkForFuture.sql" />
     <Build Include="Stored Procedures\p_GetStudentMarkSummary.sql" />
+    <Build Include="Stored Procedures\p_UpsertStudent.sql" />
+    <Build Include="Stored Procedures\p_GetStudentsWithBirthdayTomorrow.sql" />
+    <Build Include="Tables\Ad.sql" />
+    <Build Include="Stored Procedures\p_InsertAdsIfNotExists.sql" />
+    <Build Include="Stored Procedures\p_GetNewAds.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Smarsy.SQL.publish.xml" />
     <None Include="Smarsy.SQL_dev.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PreDeploy Include="Scripts\Script.PreDeployment1.sql" />
   </ItemGroup>
 </Project>

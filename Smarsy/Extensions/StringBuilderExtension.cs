@@ -1,8 +1,8 @@
-﻿using System;
-using System.Text;
-
-namespace Smarsy.Extensions
+﻿namespace Smarsy.Extensions
 {
+    using System;
+    using System.Text;
+
     public static class StringBuilderExtension
     {
         public static void AppendWithDashes(this StringBuilder sb, object text)

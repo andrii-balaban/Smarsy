@@ -1,15 +1,15 @@
-﻿using System.Net;
-using System.Net.Mail;
-
-namespace Smarsy.Logic
+﻿namespace Smarsy.Logic
 {
+    using System.Net;
+    using System.Net.Mail;
+
     public class EmailLogic
     {
         public void SendEmail(string emailTo, string subject, string body)
         {
             var fromAddress = new MailAddress("olxsender@gmail.com", "Smarsy наблюдатель");
             var toAddress = new MailAddress(emailTo, "Оценки");
-            const string fromPassword = "1mCr3at1nG$3cur3P4$$";
+            var fromPassword = "1mCr3at1nG$3cur3P4$$";
 
             var smtp = new SmtpClient
             {
