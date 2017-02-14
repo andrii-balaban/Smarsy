@@ -30,6 +30,30 @@
 
         public WebBrowser SmarsyBrowser { get; set; }
 
+        public void GetTableObjectFromPage<T>(
+            string url,
+            Func<HtmlElement, T> methodName,
+            string entityNameForLog,
+            Action<IList<T>> databaseProcessingMethodName,
+            bool isSkipHeader = true)
+        {
+            GoToLinkWithChild(url);
+            if (SmarsyBrowser.Document == null)
+            {
+                return;
+            }
+
+            var result = SmarsyBrowser.Document.GetElementsByTagName("table").OfType<HtmlElement>()
+                .Skip(1) // skip the first table on the page
+                .Take(1) // take the only second table on the page
+                .SelectMany(row => row.GetElementsByTagName("tr").OfType<HtmlElement>())
+                .Skip(isSkipHeader ? 1 : 0) // skip header row
+                .Select(methodName).ToArray();
+
+            Logger.Info($"Upserting {entityNameForLog} in database");
+            databaseProcessingMethodName(result);
+        }
+
         public void InitStudentFromDb()
         {
             Logger.Info("Getting student info from database");
@@ -50,25 +74,6 @@
         public void UpdateMarks()
         {
             GetTableObjectFromPage("http://smarsy.ua/private/parent.php?jsid=Diary&tab=Mark", ProcessMarksRow, "Marks", _sqlServerLogic.UpserStudentAllLessonsMarks);
-        }
-
-        public void GetTableObjectFromPage<T>(string url, Func<HtmlElement, T> methodName, string entityNameForLog, Action<IList<T>> databaseProcessingMethodName,  bool isSkipHeader = true)
-        {
-            GoToLinkWithChild(url);
-            if (SmarsyBrowser.Document == null)
-            {
-                return;
-            }
-
-            var result = SmarsyBrowser.Document.GetElementsByTagName("table").OfType<HtmlElement>()
-                .Skip(1) // skip the first table on the page
-                .Take(1) // take the only second table on the page
-                .SelectMany(row => row.GetElementsByTagName("tr").OfType<HtmlElement>())
-                .Skip(isSkipHeader ? 1 : 0) // skip header row
-                .Select(methodName).ToArray();
-
-            Logger.Info($"Upserting {entityNameForLog} in database");
-            databaseProcessingMethodName(result);
         }
 
         public void UpdateStudents()
@@ -141,14 +146,7 @@
             ec.SendEmail(Student.StudentId, emailToList, emailFrom, password);
         }
 
-        internal string GetTextBetweenSubstrings(string text, string from, string to)
-        {
-            var charFrom = text.IndexOf(@from, StringComparison.Ordinal) + @from.Length;
-            var charTo = to.Length == 0 ? text.Length : text.LastIndexOf(to, StringComparison.Ordinal);
-            return text.Substring(charFrom, charTo - charFrom);
-        }
-
-        internal DateTime GetDateFromText(string birthDate, int studentAge)
+        internal static DateTime GetDateFromText(string birthDate, int studentAge)
         {
             var year = DateTime.Now.Year - studentAge;
             var month = GetMonthFromRussianName(GetMonthNameFromStringWithDayNumber(birthDate));
@@ -161,6 +159,13 @@
             }
 
             return new DateTime(year, month, day);
+        }
+
+        internal string GetTextBetweenSubstrings(string text, string from, string to)
+        {
+            var charFrom = text.IndexOf(@from, StringComparison.Ordinal) + @from.Length;
+            var charTo = to.Length == 0 ? text.Length : text.LastIndexOf(to, StringComparison.Ordinal);
+            return text.Substring(charFrom, charTo - charFrom);
         }
 
         internal string GetTeacherNameFromLessonWithTeacher(string lessonNameWithTeacher, string lessonName)
@@ -178,6 +183,11 @@
 
             var result = lessonNameWithTeacher.Substring(0, lessonNameWithTeacher.IndexOf("(", StringComparison.Ordinal) - 1);
             return result;
+        }
+
+        private static string ChangeDateFormat(string date)
+        {
+            return date.Substring(6, 4) + "." + date.Substring(3, 2) + "." + date.Substring(0, 2);
         }
 
         private static Ad ProcessAdsRow(HtmlElement row)
@@ -203,11 +213,6 @@
             return ad;
         }
 
-        private static string ChangeDateFormat(string date)
-        {
-            return date.Substring(6, 4) + "." + date.Substring(3, 2) + "." + date.Substring(0, 2);
-        }
-
         private static HomeWork ProccessHomeWork(HtmlElement row)
         {
             var result = new HomeWork();
@@ -226,6 +231,34 @@
             }
 
             return result;
+        }
+
+        private static Remark ProcessRemarksRow(HtmlElement row)
+        {
+            var remark = new Remark();
+            var i = 0;
+
+            foreach (HtmlElement element in row.GetElementsByTagName("td"))
+            {
+                if (i == 0)
+                {
+                    remark.RemarkDate = element.InnerText.ConvertDateToRussianFormat();
+                }
+
+                if (i == 1)
+                {
+                    remark.LessonName = element.InnerText;
+                }
+
+                if (i == 2)
+                {
+                    remark.RemarkText = element.InnerText;
+                }
+
+                i++;
+            }
+
+            return remark;
         }
 
         private static int GetMonthFromRussianName(string name)
@@ -261,33 +294,49 @@
             return -1;
         }
 
-        private Remark ProcessRemarksRow(HtmlElement row)
+        private static Student ProcessStudentsRow(HtmlElement row)
         {
-            var remark = new Remark();
+            var student = new Student();
             var i = 0;
+            var birthDate = string.Empty;
 
-            foreach (HtmlElement element in row.GetElementsByTagName("td"))
+            foreach (HtmlElement studentRow in row.GetElementsByTagName("td"))
             {
                 if (i == 0)
                 {
-                    remark.RemarkDate = element.InnerHtml.ConvertDateToRussianFormat();
+                    i++;
+                    continue; // skip student sequence number
                 }
 
                 if (i == 1)
                 {
-                    remark.LessonName = element.InnerHtml;
-                    remark.LessonId = _sqlServerLogic.GetLessonIdByName(remark.LessonName);
+                    student.Name = studentRow.InnerHtml;
                 }
 
                 if (i == 2)
                 {
-                    remark.RemarkText = element.InnerHtml;
+                    birthDate = studentRow.InnerHtml;
+                }
+
+                if (i == 3)
+                {
+                    student.BirthDate = GetDateFromText(birthDate, int.Parse(studentRow.InnerHtml));
                 }
 
                 i++;
             }
 
-            return remark;
+            return student;
+        }
+
+        private static int GetDayFromStringWithDayNumber(string date)
+        {
+            return int.Parse(date.Substring(0, 2).Trim());
+        }
+
+        private static string GetMonthNameFromStringWithDayNumber(string date)
+        {
+            return date.Substring(2, date.Length - 2).Trim();
         }
 
         private void GoToLinkWithChild(string url)
@@ -355,51 +404,6 @@
             }
         }
 
-        private Student ProcessStudentsRow(HtmlElement row)
-        {
-            var student = new Student();
-            var i = 0;
-            var birthDate = string.Empty;
-
-            foreach (HtmlElement studentRow in row.GetElementsByTagName("td"))
-            {
-                if (i == 0)
-                {
-                    i++;
-                    continue; // skip student sequence number
-                }
-
-                if (i == 1)
-                {
-                    student.Name = studentRow.InnerHtml;
-                }
-
-                if (i == 2)
-                {
-                    birthDate = studentRow.InnerHtml;
-                }
-
-                if (i == 3)
-                {
-                    student.BirthDate = GetDateFromText(birthDate, int.Parse(studentRow.InnerHtml));
-                }
-
-                i++;
-            }
-
-            return student;
-        }
-
-        private int GetDayFromStringWithDayNumber(string date)
-        {
-            return int.Parse(date.Substring(0, 2).Trim());
-        }
-
-        private string GetMonthNameFromStringWithDayNumber(string date)
-        {
-            return date.Substring(2, date.Length - 2).Trim();
-        }
-        
         private LessonMark ProcessMarksRow(HtmlElement row)
         {
             var i = 0;
@@ -449,5 +453,5 @@
             var result = ChangeDateFormat(date);
             return DateTime.Parse(result);
         }
-}
+    }
 }

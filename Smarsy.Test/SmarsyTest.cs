@@ -1,9 +1,8 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Windows.Forms;
-
-namespace Smarsy.Test
+﻿namespace Smarsy.Test
 {
+    using System;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class SmarsyTest
     {
@@ -68,17 +67,16 @@ namespace Smarsy.Test
         [TestMethod]
         public void TestGetDateFromText()
         {
-            var op = new Operational("1");
-            var result = op.GetDateFromText("17 января", 11);
+            var result = Operational.GetDateFromText("17 января", 11);
             var expected = new DateTime(2006, 1, 17);
 
             Assert.AreEqual(result, expected);
         }
+
         [TestMethod]
         public void TestGetDateFromTextWithSingleDigitNumber()
         {
-            var op = new Operational("1");
-            var result = op.GetDateFromText("2 мая", 10);
+            var result = Operational.GetDateFromText("2 мая", 10);
             var expected = new DateTime(2006, 5, 2);
 
             Assert.AreEqual(result, expected);
@@ -87,8 +85,7 @@ namespace Smarsy.Test
         [TestMethod]
         public void TestWhenBirthdayNotYetThenSubstract1Year()
         {
-            var op = new Operational("1");
-            var result = op.GetDateFromText("17 декабря", 11);
+            var result = Operational.GetDateFromText("17 декабря", 11);
             var expected = new DateTime(2005, 12, 17);
 
             Assert.AreEqual(result, expected);

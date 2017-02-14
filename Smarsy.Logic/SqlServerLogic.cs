@@ -294,6 +294,11 @@
         {
             foreach (var remark in remarks)
             {
+                if (remark.LessonId == 0)
+                {
+                    remark.LessonId = GetLessonIdByName(remark.LessonName);
+                }
+
                 UpsertRemark(remark);
             }
         }

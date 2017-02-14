@@ -1,8 +1,7 @@
-﻿using System.Linq;
-
-namespace Smarsy
+﻿namespace Smarsy
 {
     using System;
+    using System.Linq;
     using CommandLine;
 
     internal class Program
@@ -16,7 +15,7 @@ namespace Smarsy
                 var op = new Operational(options.SmarsyLogin);
                 op.InitStudentFromDb();
                 //// options.Methods = "LoginToSmarsy,UpdateMarks,UpdateHomeWork,UpdateAds,UpdateStudents,UpdateRemarks";
-                options.Methods = "LoginToSmarsy,UpdateAds";
+                options.Methods = "LoginToSmarsy,UpdateRemarks";
 
                 var methods = options.Methods.Split(',');
                 foreach (var method in methods)
