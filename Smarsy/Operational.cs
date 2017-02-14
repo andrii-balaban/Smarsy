@@ -163,7 +163,7 @@
 
         internal string GetTextBetweenSubstrings(string text, string from, string to)
         {
-            var charFrom = text.IndexOf(@from, StringComparison.Ordinal) + @from.Length;
+            var charFrom = text.IndexOf(from, StringComparison.Ordinal) + from.Length;
             var charTo = to.Length == 0 ? text.Length : text.LastIndexOf(to, StringComparison.Ordinal);
             return text.Substring(charFrom, charTo - charFrom);
         }
