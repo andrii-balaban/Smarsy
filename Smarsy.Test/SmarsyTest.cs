@@ -1,94 +1,144 @@
-﻿namespace Smarsy.Test
+﻿using System.Threading;
+using System.Windows.Forms;
+using FluentAssertions;
+using NUnit.Framework;
+
+namespace Smarsy.Test
 {
     using System;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    [TestClass]
+    [TestFixture]
+    [Apartment(ApartmentState.STA)]
     public class SmarsyTest
     {
-        [TestMethod]
-        public void TestWhenSingleWordSeparatorsAreUsedThenOk()
+        [Test]
+        public void GetTextBetweenSubstrings_WhenSingleWordSeparatorsAreUsed_ShouldReturnExpected()
         {
-            var op = new Operational("1");
+            // Arrange
+            Operational operational = CreateOperational();
 
-            var text = "Some text to be parsed";
-            var tagFrom = "Some";
-            var tagTo = "to";
+            string text = "Some text to be parsed";
+            string tagFrom = "Some";
+            string tagTo = "to";
 
-            var result = op.GetTextBetweenSubstrings(text, tagFrom, tagTo);
+            // Act
+            string result = operational.GetTextBetweenSubstrings(text, tagFrom, tagTo);
 
-            Assert.AreEqual(result, " text ");
+            // Assert
+            result.Should().Be(" text ");
         }
 
-        [TestMethod]
-        public void TestGetLessonNameFromLessonWithTeacher()
+        [Test]
+        public void GetLessonNameFromLessonWithTeacher_WhenLessonContainsTeacherName_ShouldReturnLessonName()
         {
-            var op = new Operational("1");
+            // Arrange
+            Operational operational = CreateOperational();
 
-            var result = op.GetLessonNameFromLessonWithTeacher("Название урока (Имя учителя)");
+            string expected = "Lesson name";
 
-            Assert.AreEqual(result, "Название урока");
+            // Act
+            string result = operational.GetLessonNameFromLessonWithTeacher("Lesson name (Teacher name)");
+
+            // Assert
+            result.Should().Be(expected);
         }
 
-        [TestMethod]
-        public void TestGetLessonNameFromLessonWithTeacherWithoutTeacher()
+        [Test]
+        public void GetLessonNameFromLessonWithTeacher_WhenLessonDoesNotContaineteacherName_ShouldReturnLessonName()
         {
-            var op = new Operational("1");
+            // Arrange
+            Operational operational = CreateOperational();
 
-            var result = op.GetLessonNameFromLessonWithTeacher("Название урока");
+            // Act
+            string result = operational.GetLessonNameFromLessonWithTeacher("Lesson name");
 
-            Assert.AreEqual(result, "Название урока");
+            // Assert
+            result.Should().Be("Lesson name");
+         }
+
+        [Test]
+        public void GetTeacherNameFromLessonWithTeacher_WhenLessonNameContainesTescherName_ShouldReturnTeacherName()
+        {
+            // Arrange
+            Operational operational = CreateOperational();
+
+            // Act
+            string result = operational.GetTeacherNameFromLessonWithTeacher("Lesson name (Teacher name)", "Lesson name");
+
+            // Assert
+            result.Should().Be("Teacher name");
         }
 
-        [TestMethod]
-        public void TestGetTeacherNameFromLessonWithTeacher()
+        [Test]
+        public void Login_ShouldReturnExcpectedLogin()
         {
-            var op = new Operational("1");
+            // Arrange
+            Operational operational = CreateOperational();
 
-            var result = op.GetTeacherNameFromLessonWithTeacher("Название урока (Имя учителя)", "Название урока");
+            // Act
+            string studentLogin = operational.Student.Login;
 
-            Assert.AreEqual(result, "Имя учителя");
+            // Assert
+            studentLogin.Should().Be("1");
+            }
+
+        [Test]
+        public void SmarsyBrowser_BrowserShouldNotBeNull()
+        {
+            // Arrange
+            Operational operational = CreateOperational();
+
+            // Act
+            WebBrowser browser = operational.SmarsyBrowser;
+
+            // Assert
+            browser.Should().NotBeNull();
         }
 
-        [TestMethod]
-        public void TestWhenObjectIsInitializedThenStudentLoginIsSet()
+        [Test]
+        public void GetDateFromText_WhenTextContainesDate_ShouldReturnExpectedDate()
         {
-            var op = new Operational("1");
-            Assert.AreEqual(op.Student.Login, "1");
+            // Arrange
+            DateTime expected = new DateTime(2006, 1, 17);
+
+            // Act
+            DateTime result = Operational.GetDateFromText("17 января", 11);
+            
+            // Assert
+            result.Should().Be(expected);
         }
 
-        [TestMethod]
-        public void TestWhenObjectIsInitializedThenWebBrowserIsInitialized()
+        [Test]
+        public void GetDateFromText_WhenTextContainesSingleDigitNumberDate_ShouldReturnExpectedDate()
         {
-            var op = new Operational("1");
-            Assert.IsNotNull(op.SmarsyBrowser);
+            // Arrange
+            DateTime expected = new DateTime(2007, 5, 2);
+
+            // Act
+            DateTime result = Operational.GetDateFromText("2 мая", 10);
+            
+            // Assert
+            result.Should().Be(expected);
         }
 
-        [TestMethod]
-        public void TestGetDateFromText()
+        [Test]
+        public void GetDateFromText_WhenBirthdayNotYet_ShouldReturnSubstractedOneYear()
         {
-            var result = Operational.GetDateFromText("17 января", 11);
-            var expected = new DateTime(2006, 1, 17);
+            // Arrange
+            DateTime expected = new DateTime(2005, 12, 17);
 
-            Assert.AreEqual(result, expected);
+            // Act
+            DateTime result = Operational.GetDateFromText("17 декабря", 11);
+            
+            // Assert
+            result.Should().Be(expected);
         }
 
-        [TestMethod]
-        public void TestGetDateFromTextWithSingleDigitNumber()
+        private static Operational CreateOperational()
         {
-            var result = Operational.GetDateFromText("2 мая", 10);
-            var expected = new DateTime(2006, 5, 2);
+            string login = "1";
 
-            Assert.AreEqual(result, expected);
-        }
-
-        [TestMethod]
-        public void TestWhenBirthdayNotYetThenSubstract1Year()
-        {
-            var result = Operational.GetDateFromText("17 декабря", 11);
-            var expected = new DateTime(2005, 12, 17);
-
-            Assert.AreEqual(result, expected);
+            return new Operational(login);
         }
     }
 }
