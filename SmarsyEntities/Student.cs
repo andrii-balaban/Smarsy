@@ -4,7 +4,7 @@ namespace SmarsyEntities
 {
     using System;
 
-    public class Student : SmarsyElement<Student>
+    public class Student : SmarsyElement
     {
         public Student()
         {
@@ -27,9 +27,8 @@ namespace SmarsyEntities
         public int SmarsyChildId { get; set; }
 
         public DateTime BirthDate { get; set; }
-        public override Student GetElement(HtmlElement row)
+        public override void ParseElementFrom(HtmlElement row)
         {
-            var student = new Student();
             var i = 0;
             var birthDate = string.Empty;
 
@@ -43,7 +42,7 @@ namespace SmarsyEntities
 
                 if (i == 1)
                 {
-                    student.Name = studentRow.InnerHtml;
+                    Name = studentRow.InnerHtml;
                 }
 
                 if (i == 2)
@@ -53,13 +52,11 @@ namespace SmarsyEntities
 
                 if (i == 3)
                 {
-                    student.BirthDate = TextProcessor.Processor.GetDateFromText(birthDate, int.Parse(studentRow.InnerHtml));
+                    BirthDate = TextProcessor.Processor.GetDateFromText(birthDate, int.Parse(studentRow.InnerHtml));
                 }
 
                 i++;
             }
-
-            return student;
         }
     }
 }

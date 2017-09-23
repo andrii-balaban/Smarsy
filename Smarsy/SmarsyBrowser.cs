@@ -11,15 +11,17 @@ namespace Smarsy
     public class SmarsyBrowser : ISmarsyBrowser
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly SmarsyEntitiesFactory _smarsyEntitiesFactory;
 
-        public SmarsyBrowser()
+        public SmarsyBrowser(SmarsyEntitiesFactory entityFactory)
         {
+            _smarsyEntitiesFactory = entityFactory;
             Browser = new WebBrowser();
         }
 
         private WebBrowser Browser { get; set; }
 
-        public IEnumerable<T> GetTableObjectFromPage<T>(string url, string entityNameForLog, int childId, bool isSkipHeader = true) where T : SmarsyElement<T>
+        public IEnumerable<T> GetTableObjectFromPage<T>(string url, string entityNameForLog, int childId, bool isSkipHeader = true) where T : SmarsyElement
         {
             GoToLinkWithChild(url, childId);
 
@@ -33,7 +35,7 @@ namespace Smarsy
                 .Take(1) // take the only second table on the page
                 .SelectMany(row => row.GetElementsByTagName("tr").OfType<HtmlElement>())
                 .Skip(isSkipHeader ? 1 : 0) // skip header row
-                .Select(SmarsyElement<T>.GetElement<T>)
+                .Select(_smarsyEntitiesFactory.CreateElementOfType<T>)
                 .ToArray();
 
 
@@ -140,7 +142,7 @@ namespace Smarsy
                                 continue;
                             }
 
-                            var tmp = HomeWork.GetElement<HomeWork>(row);
+                            var tmp = _smarsyEntitiesFactory.CreateElementOfType<HomeWork>(row);
                             tmp.LessonId = lessonId;
                             tmp.TeacherId = teacherId;
 

@@ -5,7 +5,7 @@ namespace SmarsyEntities
 {
     using System.Collections.Generic;
 
-    public class LessonMark : SmarsyElement<LessonMark>
+    public class LessonMark : SmarsyElement
     {
         public List<StudentMark> Marks { get; set; }
 
@@ -13,7 +13,7 @@ namespace SmarsyEntities
 
         public int LessonId { get; set; }
 
-        public override LessonMark GetElement(HtmlElement row)
+        public override void ParseElementFrom(HtmlElement row)
         {
             var i = 0;
             var tmpMarks = row;
@@ -34,11 +34,10 @@ namespace SmarsyEntities
                 i++;
             }
 
-            var marks = new LessonMark
-            {
-                LessonName = lessonName,
-                Marks = new List<StudentMark>()
-            };
+
+            LessonName = lessonName;
+            Marks = new List<StudentMark>();
+
             foreach (HtmlElement mark in tmpMarks.GetElementsByTagName("a"))
             {
                 var studentMark = new StudentMark
@@ -47,10 +46,10 @@ namespace SmarsyEntities
                     Reason = GetTextBetweenSubstrings(mark.GetAttribute("title"), "За что получена:", string.Empty),
                     Date = GetDateFromComment(mark.GetAttribute("title"))
                 };
-                marks.Marks.Add(studentMark);
+
+                Marks.Add(studentMark);
             }
 
-            return marks;
         }
 
         private DateTime GetDateFromComment(string comment, bool isThisYear = true)

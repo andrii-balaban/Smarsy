@@ -1,16 +1,10 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace SmarsyEntities
 {
-    public abstract class SmarsyElement<T>
+    public abstract class SmarsyElement
     {
-        public static T GetElement<T>(HtmlElement row) where T : SmarsyElement<T>
-        {
-            return (Activator.CreateInstance(typeof(T)) as T).GetElement(row);
-        }
-
-        public abstract T GetElement(HtmlElement row);
+        public abstract void ParseElementFrom(HtmlElement row);
 
         protected string GetTextBetweenSubstrings(string text, string from, string to)
         {
