@@ -2,7 +2,6 @@
 
 namespace Smarsy
 {
-    using System;
     using System.Collections.Generic;
     using Logic;
     using NLog;
@@ -14,6 +13,7 @@ namespace Smarsy
         private const string MarksLink = "http://smarsy.ua/private/parent.php?jsid=Diary&tab=Mark";
         private const string StudentsLink = "http://smarsy.ua/private/parent.php?jsid=Grade&lesson=0&tab=List";
         private const string RemarksLink = "http://smarsy.ua/private/parent.php?jsid=Remark&tab=List";
+        private const string SmarsyLink = "http://www.smarsy.ua";
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -44,7 +44,7 @@ namespace Smarsy
 
         public void LoginToSmarsy()
         {
-            _smarsyBrowser.GoToLink("http://www.smarsy.ua");
+            _smarsyBrowser.GoToLink(SmarsyLink);
             _smarsyBrowser.Login(Student);
         }
 
@@ -80,13 +80,15 @@ namespace Smarsy
             Repository.UpsertHomeWorks(homeWorks);
         }
 
-        public void SendEmail(IEnumerable<string> eMails, string emailFrom, string password)
+        public void SendEmail(IEnumerable<string> emails, string emailFrom, string password)
         {
-            Logger.Info($"Sending email to {string.Join(",", eMails)}");
+            string[] emailsArray = emails.ToArray();
+
+            Logger.Info($"Sending email to {string.Join(",", emailsArray)}");
 
             List<LessonMark> marks = Repository.GetStudentMarks(Student.StudentId);
 
-            new EmailClient().SendEmail(marks, eMails, emailFrom, password);
+            new EmailClient().SendEmail(marks, emailsArray, emailFrom, password);
         }
     }
 }
