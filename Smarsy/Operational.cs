@@ -14,16 +14,17 @@
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly SqlServerLogic _sqlServerLogic;
+        private readonly ISmarsyRepository _repository;
 
-        public Operational(string login)
+        public Operational(ISmarsyRepository repository, string login)
         {
             Student = new Student
             {
                 Login = login
             };
+
             SmarsyBrowser = new WebBrowser();
-            _sqlServerLogic = new SqlServerLogic(login);
+            _repository = repository;
         }
 
         public Student Student { get; set; }
@@ -57,7 +58,7 @@
         public void InitStudentFromDb()
         {
             Logger.Info("Getting student info from database");
-            Student = _sqlServerLogic.GetStudentBySmarsyLogin(Student.Login);
+            Student = _repository.GetStudentBySmarsyLogin(Student.Login);
         }
 
         public void LoginToSmarsy()
@@ -68,22 +69,22 @@
 
         public void UpdateAds()
         {
-            GetTableObjectFromPage("http://smarsy.ua/private/parent.php?jsid=Announ&tab=List", ProcessAdsRow, "Ads", _sqlServerLogic.UpsertAds);
+            GetTableObjectFromPage("http://smarsy.ua/private/parent.php?jsid=Announ&tab=List", ProcessAdsRow, "Ads", _repository.UpsertAds);
         }
 
         public void UpdateMarks()
         {
-            GetTableObjectFromPage("http://smarsy.ua/private/parent.php?jsid=Diary&tab=Mark", ProcessMarksRow, "Marks", _sqlServerLogic.UpserStudentAllLessonsMarks);
+            GetTableObjectFromPage("http://smarsy.ua/private/parent.php?jsid=Diary&tab=Mark", ProcessMarksRow, "Marks", _repository.UpserStudentAllLessonsMarks);
         }
 
         public void UpdateStudents()
         {
-            GetTableObjectFromPage("http://smarsy.ua/private/parent.php?jsid=Grade&lesson=0&tab=List", ProcessStudentsRow, "Students", _sqlServerLogic.UpsertStudents);
+            GetTableObjectFromPage("http://smarsy.ua/private/parent.php?jsid=Grade&lesson=0&tab=List", ProcessStudentsRow, "Students", _repository.UpsertStudents);
         }
 
         public void UpdateRemarks()
         {
-            GetTableObjectFromPage("http://smarsy.ua/private/parent.php?jsid=Remark&tab=List", ProcessRemarksRow, "Remarks", _sqlServerLogic.UpsertRemarks);
+            GetTableObjectFromPage("http://smarsy.ua/private/parent.php?jsid=Remark&tab=List", ProcessRemarksRow, "Remarks", _repository.UpsertRemarks);
         }
 
         public void UpdateHomeWork()
@@ -107,8 +108,8 @@
                     var lessonNameWithTeacher = el.InnerText.Replace("\r\n", string.Empty);
                     var lessonName = GetLessonNameFromLessonWithTeacher(lessonNameWithTeacher);
                     var teacherName = GetTeacherNameFromLessonWithTeacher(lessonNameWithTeacher, lessonName);
-                    teacherId = _sqlServerLogic.InsertTeacherIfNotExists(teacherName);
-                    lessonId = _sqlServerLogic.GetLessonIdByLessonShortName(lessonName);
+                    teacherId = _repository.InsertTeacherIfNotExists(teacherName);
+                    lessonId = _repository.GetLessonIdByLessonShortName(lessonName);
                 }
                 else
                 {
@@ -136,10 +137,10 @@
             }
 
             Logger.Info("Upserting homeworks in database");
-            _sqlServerLogic.UpsertHomeWorks(homeWorks);
+            _repository.UpsertHomeWorks(homeWorks);
         }
 
-        public void SendEmail(List<string> emailToList, string emailFrom, string password)
+        public void SendEmail(IEnumerable<string> emailToList, string emailFrom, string password)
         {
             Logger.Info($"Sending email to {string.Join(",", emailToList)}");
             var ec = new EmailClient();

@@ -14,7 +14,7 @@
     {
         private readonly SqlServerLogic _sqlServerLogic = new SqlServerLogic();
 
-        public void SendEmail(int studentId, List<string> emailToList,  string emailFrom, string fromPassword)
+        public void SendEmail(int studentId, IEnumerable<string> emailToList,  string emailFrom, string fromPassword)
         {
             var subject = "Лизины оценки (" + DateTime.Now.ToShortDateString() + ")";
             var emailBody = new StringBuilder();
@@ -28,7 +28,7 @@
             SendEmail(emailToList, subject, emailBody.ToString(), emailFrom, fromPassword);
         }
 
-        public void SendEmail(List<string> emailTo, string subject, string body, string emailFrom, string fromPassword)
+        public void SendEmail(IEnumerable<string> emailTo, string subject, string body, string emailFrom, string fromPassword)
         {
             var fromAddress = new MailAddress(emailFrom, "Smarsy наблюдатель");
 

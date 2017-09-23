@@ -6,7 +6,7 @@
     using System.Data.SqlClient;
     using SmarsyEntities;
 
-    public class SqlServerLogic : IDatabaseLogic
+    public class SqlServerLogic : IDatabaseLogic, ISmarsyRepository
     {
         private readonly string _stringConn =
             "Data Source = localhost;Initial Catalog=Smarsy; Integrated Security = True; Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout = 60; Encrypt=False;TrustServerCertificate=True";
