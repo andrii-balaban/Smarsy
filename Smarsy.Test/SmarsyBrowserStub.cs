@@ -7,7 +7,7 @@ namespace Smarsy.Test
 {
     public class SmarsyBrowserStub : ISmarsyBrowser
     {
-        public IEnumerable<T> GetSmarsyElementFromPage<T>(string url, int childId) where T : SmarsyElement
+        public IEnumerable<T> GetSmarsyElementFromPage<T>(SmarsyPage<T> page) where T : SmarsyElement
         {
             throw new NotImplementedException();
         }

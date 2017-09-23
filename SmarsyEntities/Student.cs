@@ -27,7 +27,8 @@ namespace SmarsyEntities
         public int SmarsyChildId { get; set; }
 
         public DateTime BirthDate { get; set; }
-        public override void ParseElementFrom(HtmlElement row)
+
+        public override void ParseFromHtmlElement(HtmlElement row)
         {
             var i = 0;
             var birthDate = string.Empty;

@@ -5,7 +5,7 @@ namespace Smarsy.SmarsyBrowser
 {
     public interface ISmarsyBrowser
     {
-        IEnumerable<T> GetSmarsyElementFromPage<T>(string url, int childId) where T : SmarsyElement;
+        IEnumerable<T> GetSmarsyElementFromPage<T>(SmarsyPage<T> page) where T : SmarsyElement;
         void GoToLink(string url);
         void WaitForPageToLoad();
         IEnumerable<HomeWork> UpdateHomeWork(SmarsyOperations smarsyOperations, int smarsyChildId);

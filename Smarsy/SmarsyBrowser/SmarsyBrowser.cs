@@ -21,25 +21,16 @@ namespace Smarsy.SmarsyBrowser
 
         private WebBrowser Browser { get; set; }
 
-        public IEnumerable<T> GetSmarsyElementFromPage<T>(string url, int childId) where T : SmarsyElement
+        public IEnumerable<T> GetSmarsyElementFromPage<T>(SmarsyPage<T> page) where T : SmarsyElement
         {
-            GoToLinkWithChild(url, childId);
+            GoToPage(page);
 
-            if (!IsPageLoaded())
+            if (!page.IsPageLoaded())
             {
                 return Enumerable.Empty<T>();
             }
 
-            IEnumerable<T> result = Browser.Document.GetElementsByTagName("table").OfType<HtmlElement>()
-                .Skip(1) // skip the first table on the page
-                .Take(1) // take the only second table on the page
-                .SelectMany(row => row.GetElementsByTagName("tr").OfType<HtmlElement>())
-                .Skip(1) // skip header row
-                .Select(_smarsyEntitiesFactory.CreateElementOfType<T>)
-                .ToArray();
-
-
-            return result;
+            return page.GetSmarsyElementsFromPage();
         }
 
         private bool IsPageLoaded()
@@ -47,9 +38,11 @@ namespace Smarsy.SmarsyBrowser
             return Browser.Document != null;
         }
 
-        private void GoToLinkWithChild(string url, int childId)
+        private void GoToPage<T>(SmarsyPage<T> page) where T : SmarsyElement
         {
-            GoToLink($"{url}&child={childId}");
+            GoToLink(page.GetPageAddress());
+
+            page.SetPageDocument(Browser.Document);
         }
 
         public void GoToLink(string url)

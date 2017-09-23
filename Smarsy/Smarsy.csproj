@@ -75,7 +75,12 @@
     <Compile Include="Email\EmailClient.cs" />
     <Compile Include="Extensions\StringBuilderExtension.cs" />
     <Compile Include="IDateTimeProvider.cs" />
+    <Compile Include="SmarsyBrowser\AdPage.cs" />
     <Compile Include="SmarsyBrowser\ISmarsyBrowser.cs" />
+    <Compile Include="SmarsyBrowser\MarksPage.cs" />
+    <Compile Include="SmarsyBrowser\RemarksPage.cs" />
+    <Compile Include="SmarsyBrowser\SmarsyPage.cs" />
+    <Compile Include="SmarsyBrowser\StudentsPage.cs" />
     <Compile Include="SmarsyOperations.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

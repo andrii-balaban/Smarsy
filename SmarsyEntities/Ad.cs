@@ -10,7 +10,7 @@ namespace SmarsyEntities
 
         public string AdText { get; set; }
 
-        public override void ParseElementFrom(HtmlElement row)
+        public override void ParseFromHtmlElement(HtmlElement row)
         {
             var i = 1;
 

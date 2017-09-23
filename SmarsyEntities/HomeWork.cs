@@ -18,7 +18,7 @@ namespace SmarsyEntities
 
         public string TeacherName { get; set; }
 
-        public override void ParseElementFrom(HtmlElement row)
+        public override void ParseFromHtmlElement(HtmlElement row)
         {
             var i = 0;
             foreach (HtmlElement cell in row.GetElementsByTagName("td"))

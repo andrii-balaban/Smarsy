@@ -4,12 +4,7 @@ namespace SmarsyEntities
 {
     public abstract class SmarsyElement
     {
-        public abstract void ParseElementFrom(HtmlElement row);
-
-        protected string GetTextBetweenSubstrings(string text, string from, string to)
-        {
-            return TextProcessor.Processor.GetTextBetweenSubstrings(text, from, to);
-        }
+        public abstract void ParseFromHtmlElement(HtmlElement row);
 
         protected string ChangeDateFormat(string date)
         {

@@ -11,10 +11,6 @@ namespace Smarsy
 
     public class SmarsyOperations
     {
-        private const string AdsLink = "http://smarsy.ua/private/parent.php?jsid=Announ&tab=List";
-        private const string MarksLink = "http://smarsy.ua/private/parent.php?jsid=Diary&tab=Mark";
-        private const string StudentsLink = "http://smarsy.ua/private/parent.php?jsid=Grade&lesson=0&tab=List";
-        private const string RemarksLink = "http://smarsy.ua/private/parent.php?jsid=Remark&tab=List";
         private const string SmarsyLink = "http://www.smarsy.ua";
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -50,15 +46,17 @@ namespace Smarsy
 
         public void UpdateAds()
         {
-            List<Ad> resutl = _smarsyBrowser.GetSmarsyElementFromPage<Ad>(AdsLink, Student.SmarsyChildId).ToList();
+            AdPage marksPage = new AdPage(Student.SmarsyChildId);
+            List<Ad> result = _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
 
             Logger.Info("Upserting Ads in database");
-            _repository.UpsertAds(resutl);
+            _repository.UpsertAds(result);
         }
 
         public void UpdateMarks()
         {
-            List<LessonMark> result =_smarsyBrowser.GetSmarsyElementFromPage<LessonMark>(MarksLink, Student.SmarsyChildId).ToList();
+            MarksPage marksPage = new MarksPage(Student.SmarsyChildId);
+            List<LessonMark> result =_smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
 
             Logger.Info("Upserting LessonMark in database");
             _repository.UpserStudentAllLessonsMarks(result);
@@ -66,7 +64,8 @@ namespace Smarsy
 
         public void UpdateStudents()
         {
-            List<Student> students = _smarsyBrowser.GetSmarsyElementFromPage<Student>(StudentsLink, Student.SmarsyChildId).ToList();
+            StudentsPage marksPage = new StudentsPage(Student.SmarsyChildId);
+            List<Student> students = _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
 
             Logger.Info("Upserting Students in database");
             _repository.UpsertStudents(students);
@@ -74,7 +73,8 @@ namespace Smarsy
 
         public void UpdateRemarks()
         {
-            List<Remark> remarks = _smarsyBrowser.GetSmarsyElementFromPage<Remark>(RemarksLink, Student.SmarsyChildId).ToList();
+            RemarksPage marksPage = new RemarksPage(Student.SmarsyChildId);
+            List<Remark> remarks = _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
 
             Logger.Info("Upserting Remarks in database");
             _repository.UpsertRemarks(remarks);

@@ -13,7 +13,7 @@ namespace SmarsyEntities
         public int LessonId { get; set; }
 
         public string LessonName { get; set; }
-        public override void ParseElementFrom(HtmlElement row)
+        public override void ParseFromHtmlElement(HtmlElement row)
         {
             var i = 0;
 

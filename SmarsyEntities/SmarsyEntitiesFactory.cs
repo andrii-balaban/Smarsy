@@ -9,7 +9,7 @@ namespace SmarsyEntities
         {
             var element = Activator.CreateInstance(typeof(T)) as SmarsyElement;
 
-            element?.ParseElementFrom(row);
+            element?.ParseFromHtmlElement(row);
 
             return element as T;
         }

@@ -13,7 +13,7 @@ namespace SmarsyEntities
 
         public int LessonId { get; set; }
 
-        public override void ParseElementFrom(HtmlElement row)
+        public override void ParseFromHtmlElement(HtmlElement row)
         {
             var i = 0;
             var tmpMarks = row;
@@ -43,7 +43,7 @@ namespace SmarsyEntities
                 var studentMark = new StudentMark
                 {
                     Mark = int.Parse(mark.InnerText),
-                    Reason = GetTextBetweenSubstrings(mark.GetAttribute("title"), "За что получена:", string.Empty),
+                    Reason = TextProcessor.Processor.GetTextBetweenSubstrings(mark.GetAttribute("title"), "За что получена:", string.Empty),
                     Date = GetDateFromComment(mark.GetAttribute("title"))
                 };
 
@@ -55,7 +55,7 @@ namespace SmarsyEntities
         private DateTime GetDateFromComment(string comment, bool isThisYear = true)
         {
             var year = isThisYear ? DateTime.Now.Year.ToString() : (DateTime.Now.Year - 1).ToString();
-            var dateWithText = GetTextBetweenSubstrings(comment, "Дата оценки: ", ";");
+            var dateWithText = TextProcessor.Processor.GetTextBetweenSubstrings(comment, "Дата оценки: ", ";");
             var date = dateWithText.Substring(3, dateWithText.Length - 3) + "." + year;
 
             var result = ChangeDateFormat(date);
