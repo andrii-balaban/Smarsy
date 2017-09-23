@@ -11,11 +11,9 @@ namespace Smarsy.SmarsyBrowser
     public class SmarsyBrowser : ISmarsyBrowser
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly SmarsyEntitiesFactory _smarsyEntitiesFactory;
 
-        public SmarsyBrowser(SmarsyEntitiesFactory entityFactory)
+        public SmarsyBrowser()
         {
-            _smarsyEntitiesFactory = entityFactory;
             Browser = new WebBrowser();
         }
 
@@ -135,7 +133,9 @@ namespace Smarsy.SmarsyBrowser
                                 continue;
                             }
 
-                            var tmp = _smarsyEntitiesFactory.CreateElementOfType<HomeWork>(row);
+                            var homework = new HomeWork();
+                            homework.ParseFromHtmlElement(row);
+                            var tmp = homework;
                             tmp.LessonId = lessonId;
                             tmp.TeacherId = teacherId;
 

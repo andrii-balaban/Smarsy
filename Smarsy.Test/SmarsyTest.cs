@@ -71,7 +71,7 @@ namespace Smarsy.Test
 
         private SmarsyBrowser.SmarsyBrowser CreateSmarsyBrowser()
         {
-            SmarsyBrowser.SmarsyBrowser smarsyBrowser = new SmarsyBrowser.SmarsyBrowser(new SmarsyEntitiesFactory());
+            SmarsyBrowser.SmarsyBrowser smarsyBrowser = new SmarsyBrowser.SmarsyBrowser();
             return smarsyBrowser;
         }
 
