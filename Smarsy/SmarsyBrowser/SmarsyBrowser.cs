@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using NLog;
 using SmarsyEntities;
 
-namespace Smarsy
+namespace Smarsy.SmarsyBrowser
 {
     public class SmarsyBrowser : ISmarsyBrowser
     {

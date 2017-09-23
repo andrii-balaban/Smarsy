@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SmarsyEntities;
 
-namespace Smarsy
+namespace Smarsy.SmarsyBrowser
 {
     public interface ISmarsyBrowser
     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Smarsy.SmarsyBrowser;
 using SmarsyEntities;
 
 namespace Smarsy.Test

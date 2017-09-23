@@ -70,16 +70,16 @@
   <ItemGroup>
     <Compile Include="CommandLineOptions.cs" />
     <Compile Include="DateTimeProvider.cs" />
-    <Compile Include="Email.cs" />
-    <Compile Include="EmailBuilder.cs" />
-    <Compile Include="EmailClient.cs" />
+    <Compile Include="Email\Email.cs" />
+    <Compile Include="Email\EmailBuilder.cs" />
+    <Compile Include="Email\EmailClient.cs" />
     <Compile Include="Extensions\StringBuilderExtension.cs" />
     <Compile Include="IDateTimeProvider.cs" />
-    <Compile Include="ISmarsyBrowser.cs" />
+    <Compile Include="SmarsyBrowser\ISmarsyBrowser.cs" />
     <Compile Include="SmarsyOperations.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SmarsyBrowser.cs" />
+    <Compile Include="SmarsyBrowser\SmarsyBrowser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

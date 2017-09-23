@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using Smarsy.Email;
+using Smarsy.SmarsyBrowser;
 
 namespace Smarsy
 {
@@ -94,7 +96,7 @@ namespace Smarsy
 
             string subject = CreateEmailSubject();
 
-            Email email = new EmailBuilder()
+            Email.Email email = new EmailBuilder()
                 .WithHomeworks(Repository.GetHomeWorkForFuture())
                 .WithTomorrowBirthDayStudents(Repository.GetStudentsWithBirthdayTomorrow())
                 .WithRemarks(Repository.GetNewRemarks())

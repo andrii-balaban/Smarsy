@@ -32,7 +32,7 @@ namespace Smarsy.Test
         public void GetLessonNameFromLessonWithTeacher_WhenLessonContainsTeacherName_ShouldReturnLessonName()
         {
             // Arrange
-            SmarsyBrowser smarsyBrowser = CreateSmarsyBrowser();
+            SmarsyBrowser.SmarsyBrowser smarsyBrowser = CreateSmarsyBrowser();
 
             string expected = "Lesson name";
 
@@ -47,7 +47,7 @@ namespace Smarsy.Test
         public void GetLessonNameFromLessonWithTeacher_WhenLessonDoesNotContaineteacherName_ShouldReturnLessonName()
         {
             // Arrange
-            SmarsyBrowser smarsyBrowser = CreateSmarsyBrowser();
+            SmarsyBrowser.SmarsyBrowser smarsyBrowser = CreateSmarsyBrowser();
 
             // Act
             string result = smarsyBrowser.GetLessonNameFromLessonWithTeacher("Lesson name");
@@ -60,7 +60,7 @@ namespace Smarsy.Test
         public void GetTeacherNameFromLessonWithTeacher_WhenLessonNameContainesTescherName_ShouldReturnTeacherName()
         {
             // Arrange
-            SmarsyBrowser smarsyBrowser = CreateSmarsyBrowser();
+            SmarsyBrowser.SmarsyBrowser smarsyBrowser = CreateSmarsyBrowser();
 
             // Act
             string result = smarsyBrowser.GetTeacherNameFromLessonWithTeacher("Lesson name (Teacher name)", "Lesson name");
@@ -69,9 +69,9 @@ namespace Smarsy.Test
             result.Should().Be("Teacher name");
         }
 
-        private SmarsyBrowser CreateSmarsyBrowser()
+        private SmarsyBrowser.SmarsyBrowser CreateSmarsyBrowser()
         {
-            SmarsyBrowser smarsyBrowser = new SmarsyBrowser(new SmarsyEntitiesFactory());
+            SmarsyBrowser.SmarsyBrowser smarsyBrowser = new SmarsyBrowser.SmarsyBrowser(new SmarsyEntitiesFactory());
             return smarsyBrowser;
         }
 

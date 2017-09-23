@@ -5,7 +5,7 @@ using System.Text;
 using Smarsy.Extensions;
 using SmarsyEntities;
 
-namespace Smarsy
+namespace Smarsy.Email
 {
     public class Email
     {

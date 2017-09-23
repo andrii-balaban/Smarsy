@@ -1,10 +1,9 @@
-﻿namespace Smarsy
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Net;
-    using System.Net.Mail;
+﻿using System.Collections.Generic;
+using System.Net;
+using System.Net.Mail;
 
+namespace Smarsy.Email
+{
     public class EmailClient
     {
         public void SendEmail(Email email, IEnumerable<string> emailToList,  string emailFrom, string fromPassword, string subject)
