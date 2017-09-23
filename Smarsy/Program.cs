@@ -17,7 +17,7 @@ namespace Smarsy
             if (!Parser.Default.ParseArguments(args, options))
                 return;
 
-            SmarsyOperations smarsyOperations = new SmarsyOperations(new SqlServerLogic(options.SmarsyLogin), new SmarsyBrowser(new SmarsyEntitiesFactory()));
+            SmarsyOperations smarsyOperations = new SmarsyOperations(new SqlServerLogic(options.SmarsyLogin), new SmarsyBrowser(new SmarsyEntitiesFactory()), new DateTimeProvider());
 
             //// options.Methods = "LoginToSmarsy,UpdateMarks,UpdateHomeWork,UpdateAds,UpdateStudents,UpdateRemarks";
             options.Methods = "LoginToSmarsy,UpdateRemarks";

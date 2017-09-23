@@ -19,11 +19,13 @@ namespace Smarsy
 
         private readonly ISmarsyRepository _repository;
         private readonly ISmarsyBrowser _smarsyBrowser;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public SmarsyOperations(ISmarsyRepository repository, ISmarsyBrowser smarsyBrowser)
+        public SmarsyOperations(ISmarsyRepository repository, ISmarsyBrowser smarsyBrowser, IDateTimeProvider dateTimeProvider)
         {
             _repository = repository;
             _smarsyBrowser = smarsyBrowser;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public Student Student { get; set; }
@@ -90,9 +92,22 @@ namespace Smarsy
 
             Logger.Info($"Sending email to {string.Join(",", emailsArray)}");
 
-            List<LessonMark> marks = Repository.GetStudentMarks(Student.StudentId);
+            string subject = CreateEmailSubject();
 
-            new EmailClient().SendEmail(marks, emailsArray, emailFrom, password);
+            Email email = new EmailBuilder()
+                .WithHomeworks(Repository.GetHomeWorkForFuture())
+                .WithTomorrowBirthDayStudents(Repository.GetStudentsWithBirthdayTomorrow())
+                .WithRemarks(Repository.GetNewRemarks())
+                .WithAds(Repository.GetNewAds())
+                .WithMarks(Repository.GetStudentMarks(Student.StudentId))
+                .Build();
+
+            new EmailClient().SendEmail(email, emailsArray, emailFrom, password, subject);
+        }
+
+        private string CreateEmailSubject()
+        {
+            return "Лизины оценки (" + _dateTimeProvider.GetDateTime().ToShortDateString() + ")";
         }
     }
 }

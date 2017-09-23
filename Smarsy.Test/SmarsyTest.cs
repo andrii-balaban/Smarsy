@@ -133,7 +133,7 @@ namespace Smarsy.Test
 
         private static SmarsyOperations CreateOperational()
         {
-            return new SmarsyOperations(new DataBaseStub(), new SmarsyBrowserStub());
+            return new SmarsyOperations(new DataBaseStub(), new SmarsyBrowserStub(), new DateTimeProvider());
         }
     }
 }

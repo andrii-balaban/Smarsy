@@ -69,8 +69,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLineOptions.cs" />
+    <Compile Include="DateTimeProvider.cs" />
+    <Compile Include="Email.cs" />
+    <Compile Include="EmailBuilder.cs" />
     <Compile Include="EmailClient.cs" />
     <Compile Include="Extensions\StringBuilderExtension.cs" />
+    <Compile Include="IDateTimeProvider.cs" />
     <Compile Include="ISmarsyBrowser.cs" />
     <Compile Include="SmarsyOperations.cs" />
     <Compile Include="Program.cs" />
