@@ -8,7 +8,7 @@ namespace SmarsyEntities
 
         protected string GetTextBetweenSubstrings(string text, string from, string to)
         {
-            return TextProcessor.Processor.GetTextBetweenSubstrings(text, @from, to);
+            return TextProcessor.Processor.GetTextBetweenSubstrings(text, from, to);
         }
 
         protected string ChangeDateFormat(string date)

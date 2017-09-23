@@ -70,7 +70,6 @@
   <ItemGroup>
     <Compile Include="CommandLineOptions.cs" />
     <Compile Include="EmailClient.cs" />
-    <Compile Include="Extensions\StringExtension.cs" />
     <Compile Include="Extensions\StringBuilderExtension.cs" />
     <Compile Include="ISmarsyBrowser.cs" />
     <Compile Include="SmarsyOperations.cs" />
