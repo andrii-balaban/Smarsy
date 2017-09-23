@@ -29,53 +29,6 @@ namespace Smarsy.Test
         }
 
         [Test]
-        public void GetLessonNameFromLessonWithTeacher_WhenLessonContainsTeacherName_ShouldReturnLessonName()
-        {
-            // Arrange
-            SmarsyBrowser.SmarsyBrowser smarsyBrowser = CreateSmarsyBrowser();
-
-            string expected = "Lesson name";
-
-            // Act
-            string result = smarsyBrowser.GetLessonNameFromLessonWithTeacher("Lesson name (Teacher name)");
-
-            // Assert
-            result.Should().Be(expected);
-        }
-
-        [Test]
-        public void GetLessonNameFromLessonWithTeacher_WhenLessonDoesNotContaineteacherName_ShouldReturnLessonName()
-        {
-            // Arrange
-            SmarsyBrowser.SmarsyBrowser smarsyBrowser = CreateSmarsyBrowser();
-
-            // Act
-            string result = smarsyBrowser.GetLessonNameFromLessonWithTeacher("Lesson name");
-
-            // Assert
-            result.Should().Be("Lesson name");
-         }
-
-        [Test]
-        public void GetTeacherNameFromLessonWithTeacher_WhenLessonNameContainesTescherName_ShouldReturnTeacherName()
-        {
-            // Arrange
-            SmarsyBrowser.SmarsyBrowser smarsyBrowser = CreateSmarsyBrowser();
-
-            // Act
-            string result = smarsyBrowser.GetTeacherNameFromLessonWithTeacher("Lesson name (Teacher name)", "Lesson name");
-
-            // Assert
-            result.Should().Be("Teacher name");
-        }
-
-        private SmarsyBrowser.SmarsyBrowser CreateSmarsyBrowser()
-        {
-            SmarsyBrowser.SmarsyBrowser smarsyBrowser = new SmarsyBrowser.SmarsyBrowser();
-            return smarsyBrowser;
-        }
-
-        [Test]
         public void Login_ShouldReturnExcpectedLogin()
         {
             // Arrange

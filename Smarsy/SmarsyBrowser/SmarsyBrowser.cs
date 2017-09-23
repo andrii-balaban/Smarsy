@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -31,15 +30,9 @@ namespace Smarsy.SmarsyBrowser
             return page.GetSmarsyElementsFromPage();
         }
 
-        private bool IsPageLoaded()
-        {
-            return Browser.Document != null;
-        }
-
-        private void GoToPage<T>(SmarsyPage<T> page) where T : SmarsyElement
+        public void GoToPage(Page page)
         {
             GoToLink(page.GetPageAddress());
-
             page.SetPageDocument(Browser.Document);
         }
 
@@ -50,7 +43,16 @@ namespace Smarsy.SmarsyBrowser
             WaitForPageToLoad();
         }
 
-        public void WaitForPageToLoad()
+        public void Login(LoginPage page)
+        {
+            GoToPage(page);
+
+            page.EnterLogin();
+
+            WaitForPageToLoad();
+        }
+
+        private void WaitForPageToLoad()
         {
             while (Browser.ReadyState != WebBrowserReadyState.Complete)
             {
@@ -58,124 +60,6 @@ namespace Smarsy.SmarsyBrowser
             }
 
             Thread.Sleep(500);
-        }
-
-        private void ClickOnLoginButton()
-        {
-            if (!IsPageLoaded())
-            {
-                return;
-            }
-
-            var bclick = Browser.Document.GetElementsByTagName("input");
-            foreach (HtmlElement btn in bclick)
-            {
-                var name = btn.Name;
-                if (name == "submit")
-                {
-                    btn.InvokeMember("click");
-                }
-            }
-        }
-
-        private void FillTextBoxByElementId(string elementId, string value)
-        {
-            if (Browser == null || Browser.Document == null || elementId == null)
-            {
-                return;
-            }
-
-            Logger.Info($"Entering text to the {elementId} element");
-
-            var element = Browser.Document.GetElementById(elementId);
-            if (element != null)
-            {
-                element.InnerText = value;
-            }
-        }
-
-        public IEnumerable<HomeWork> UpdateHomeWork(SmarsyOperations smarsyOperations, int smarsyChildId)
-        {
-            GoToLink($"http://smarsy.ua/private/parent.php?jsid=Homework&child={smarsyChildId}&tab=Lesson");
-
-            if (Browser.Document == null)
-            {
-                return Enumerable.Empty<HomeWork>();
-            }
-
-            var homeWorks = new List<HomeWork>();
-            var tables = Browser.Document.GetElementsByTagName("table");
-            var separateLessonNameFromHomeWork = 0;
-            var teacherId = 0;
-            var lessonId = 0;
-
-            foreach (HtmlElement el in tables)
-            {
-                if (separateLessonNameFromHomeWork++ % 2 == 0)
-                {
-                    var lessonNameWithTeacher = el.InnerText.Replace("\r\n", string.Empty);
-                    var lessonName = GetLessonNameFromLessonWithTeacher(lessonNameWithTeacher);
-                    var teacherName = GetTeacherNameFromLessonWithTeacher(lessonNameWithTeacher, lessonName);
-
-                    teacherId = smarsyOperations.Repository.InsertTeacherIfNotExists(teacherName);
-                    lessonId = smarsyOperations.Repository.GetLessonIdByLessonShortName(lessonName);
-                }
-                else
-                {
-                    foreach (HtmlElement rows in el.All)
-                    {
-                        var isHeader = true;
-                        foreach (HtmlElement row in rows.GetElementsByTagName("tr"))
-                        {
-                            if (isHeader)
-                            {
-                                isHeader = false;
-                                continue;
-                            }
-
-                            var homework = new HomeWork();
-                            homework.ParseFromHtmlElement(row);
-                            var tmp = homework;
-                            tmp.LessonId = lessonId;
-                            tmp.TeacherId = teacherId;
-
-                            if ((tmp.HomeWorkDescr != null) && !tmp.HomeWorkDescr.Trim().Equals(string.Empty))
-                            {
-                                homeWorks.Add(tmp);
-                            }
-                        }
-                    }
-                }
-            }
-
-            Logger.Info("Upserting homeworks in database");
-
-            return homeWorks;
-        }
-
-        public string GetLessonNameFromLessonWithTeacher(string lessonNameWithTeacher)
-        {
-            if (!lessonNameWithTeacher.Contains("("))
-            {
-                return lessonNameWithTeacher;
-            }
-
-            return lessonNameWithTeacher.Substring(0, lessonNameWithTeacher.IndexOf("(", StringComparison.Ordinal) - 1);
-        }
-
-        public string GetTeacherNameFromLessonWithTeacher(string lessonNameWithTeacher, string lessonName)
-        {
-            var result = lessonNameWithTeacher.Replace(lessonName, string.Empty).Replace("(", string.Empty).Replace(")", string.Empty).Trim();
-            return result;
-        }
-
-        public void Login(Student student)
-        {
-            FillTextBoxByElementId("username", student.Login);
-            FillTextBoxByElementId("password", student.Password);
-            ClickOnLoginButton();
-
-            WaitForPageToLoad();
         }
     }
 }

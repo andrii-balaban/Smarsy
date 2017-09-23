@@ -5,7 +5,7 @@ using SmarsyEntities;
 
 namespace Smarsy.SmarsyBrowser
 {
-    public abstract class SmarsyPage<T> where T : SmarsyElement
+    public abstract class SmarsyPage<T> : Page where T : SmarsyElement
     {
         private readonly int _childId;
 
@@ -14,26 +14,12 @@ namespace Smarsy.SmarsyBrowser
             _childId = childId;
         }
 
-        protected abstract string PageLink { get; }
-
-        protected HtmlDocument Document { get; set; }
-
-        public string GetPageAddress()
+        public override string GetPageAddress()
         {
             return $"{PageLink}&child={_childId}";
         }
 
-        public void SetPageDocument(HtmlDocument document)
-        {
-            Document = document;
-        }
-
-        public bool IsPageLoaded()
-        {
-            return Document != null;
-        }
-
-        protected IEnumerable<HtmlElement> GetPageTableRows()
+        protected virtual IEnumerable<HtmlElement> GetPageTableRows()
         {
             if (!IsPageLoaded())
                 return Enumerable.Empty<HtmlElement>();

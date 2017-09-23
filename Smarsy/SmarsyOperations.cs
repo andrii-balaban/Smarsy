@@ -11,8 +11,6 @@ namespace Smarsy
 
     public class SmarsyOperations
     {
-        private const string SmarsyLink = "http://www.smarsy.ua";
-
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly ISmarsyRepository _repository;
@@ -34,8 +32,7 @@ namespace Smarsy
         {
             LoadStudent(login);
 
-            _smarsyBrowser.GoToLink(SmarsyLink);
-            _smarsyBrowser.Login(Student);
+            _smarsyBrowser.Login(new LoginPage(Student.Login, Student.Password));
         }
 
         private void LoadStudent(string login)
@@ -82,7 +79,8 @@ namespace Smarsy
 
         public void UpdateHomeWork()
         {
-            List<HomeWork> homeWorks = _smarsyBrowser.UpdateHomeWork(this, Student.SmarsyChildId).ToList();
+            HomeworkPage homeworkPage = new HomeworkPage(Student.SmarsyChildId, this);
+            List<HomeWork> homeWorks = _smarsyBrowser.GetSmarsyElementFromPage(homeworkPage).ToList();
 
             Logger.Info("Upserting Homework in database");
             Repository.UpsertHomeWorks(homeWorks);

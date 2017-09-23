@@ -12,32 +12,12 @@ namespace Smarsy.Test
             throw new NotImplementedException();
         }
 
-        public void GoToLink(string url)
-        {
-            
-        }
-
-        public void WaitForPageToLoad()
+        public void GoToPage(Page page)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<HomeWork> UpdateHomeWork(SmarsyOperations smarsyOperations, int smarsyChildId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetLessonNameFromLessonWithTeacher(string lessonNameWithTeacher)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetTeacherNameFromLessonWithTeacher(string lessonNameWithTeacher, string lessonName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Login(Student student)
+        public void Login(LoginPage page)
         {
             
         }
