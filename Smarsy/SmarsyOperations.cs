@@ -18,9 +18,9 @@ namespace Smarsy
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly ISmarsyRepository _repository;
-        private readonly SmarsyBrowser _smarsyBrowser;
+        private readonly ISmarsyBrowser _smarsyBrowser;
 
-        public SmarsyOperations(ISmarsyRepository repository, string login)
+        public SmarsyOperations(ISmarsyRepository repository, ISmarsyBrowser smarsyBrowser, string login)
         {
             Student = new Student
             {
@@ -28,7 +28,7 @@ namespace Smarsy
             };
 
             _repository = repository;
-            _smarsyBrowser = new SmarsyBrowser();
+            _smarsyBrowser = smarsyBrowser;
         }
 
         public Student Student { get; set; }

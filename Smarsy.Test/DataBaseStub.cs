@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Smarsy.Logic;
 using SmarsyEntities;
 
-namespace Smarsy
+namespace Smarsy.Test
 {
     public class DataBaseStub : ISmarsyRepository
     {

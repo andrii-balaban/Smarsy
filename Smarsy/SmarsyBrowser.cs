@@ -8,7 +8,7 @@ using SmarsyEntities;
 
 namespace Smarsy
 {
-    public class SmarsyBrowser
+    public class SmarsyBrowser : ISmarsyBrowser
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

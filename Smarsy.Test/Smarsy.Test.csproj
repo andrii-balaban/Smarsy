@@ -63,6 +63,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="DataBaseStub.cs" />
+    <Compile Include="SmarsyBrowserStub.cs" />
     <Compile Include="SmarsyTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -69,10 +69,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLineOptions.cs" />
-    <Compile Include="DataBaseStub.cs" />
     <Compile Include="EmailClient.cs" />
     <Compile Include="Extensions\StringExtension.cs" />
     <Compile Include="Extensions\StringBuilderExtension.cs" />
+    <Compile Include="ISmarsyBrowser.cs" />
     <Compile Include="SmarsyOperations.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

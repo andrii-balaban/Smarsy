@@ -128,7 +128,7 @@ namespace Smarsy.Test
         {
             string login = "1";
 
-            return new SmarsyOperations(new DataBaseStub(), login);
+            return new SmarsyOperations(new DataBaseStub(), new SmarsyBrowserStub(), login);
         }
     }
 }
