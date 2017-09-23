@@ -15,7 +15,7 @@ namespace Smarsy
             if (!Parser.Default.ParseArguments(args, options))
                 return;
 
-            Operational op = new Operational(new SqlServerLogic(options.SmarsyLogin), options.SmarsyLogin);
+            SmarsyOperations op = new SmarsyOperations(new SqlServerLogic(options.SmarsyLogin), options.SmarsyLogin);
             op.InitStudentFromDb();
 
             //// options.Methods = "LoginToSmarsy,UpdateMarks,UpdateHomeWork,UpdateAds,UpdateStudents,UpdateRemarks";
@@ -26,14 +26,14 @@ namespace Smarsy
             SendEmails(options, op);
         }
 
-        private static void SendEmails(CommandLineOptions options, Operational op)
+        private static void SendEmails(CommandLineOptions options, SmarsyOperations op)
         {
             string[] emailToList = options.EmailsTo.Split(',');
 
             op.SendEmail(emailToList, options.EmailsFrom, options.EmailPassword);
         }
 
-        private static void InvokeMethods(CommandLineOptions options, Operational op)
+        private static void InvokeMethods(CommandLineOptions options, SmarsyOperations op)
         {
             string[] methodNames = GetMethodNames(options);
 
@@ -49,7 +49,7 @@ namespace Smarsy
             return methodNames;
         }
 
-        private static void InvokeMethodByName(Operational op, string methodName)
+        private static void InvokeMethodByName(SmarsyOperations op, string methodName)
         {
             Type classType = op.GetType();
             MethodInfo methodInfo = classType.GetMethod(methodName.Trim());

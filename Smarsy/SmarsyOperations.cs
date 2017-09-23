@@ -8,7 +8,7 @@ namespace Smarsy
     using NLog;
     using SmarsyEntities;
 
-    public class Operational
+    public class SmarsyOperations
     {
         private const string AdsLink = "http://smarsy.ua/private/parent.php?jsid=Announ&tab=List";
         private const string MarksLink = "http://smarsy.ua/private/parent.php?jsid=Diary&tab=Mark";
@@ -20,7 +20,7 @@ namespace Smarsy
         private readonly ISmarsyRepository _repository;
         private readonly SmarsyBrowser _smarsyBrowser;
 
-        public Operational(ISmarsyRepository repository, string login)
+        public SmarsyOperations(ISmarsyRepository repository, string login)
         {
             Student = new Student
             {

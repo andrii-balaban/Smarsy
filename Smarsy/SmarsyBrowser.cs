@@ -96,9 +96,9 @@ namespace Smarsy
             }
         }
 
-        public IEnumerable<HomeWork> UpdateHomeWork(Operational operational)
+        public IEnumerable<HomeWork> UpdateHomeWork(SmarsyOperations smarsyOperations)
         {
-            GoToLink($"http://smarsy.ua/private/parent.php?jsid=Homework&child={operational.Student.SmarsyChildId}&tab=Lesson");
+            GoToLink($"http://smarsy.ua/private/parent.php?jsid=Homework&child={smarsyOperations.Student.SmarsyChildId}&tab=Lesson");
 
             if (Browser.Document == null)
             {
@@ -119,8 +119,8 @@ namespace Smarsy
                     var lessonName = GetLessonNameFromLessonWithTeacher(lessonNameWithTeacher);
                     var teacherName = GetTeacherNameFromLessonWithTeacher(lessonNameWithTeacher, lessonName);
 
-                    teacherId = operational.Repository.InsertTeacherIfNotExists(teacherName);
-                    lessonId = operational.Repository.GetLessonIdByLessonShortName(lessonName);
+                    teacherId = smarsyOperations.Repository.InsertTeacherIfNotExists(teacherName);
+                    lessonId = smarsyOperations.Repository.GetLessonIdByLessonShortName(lessonName);
                 }
                 else
                 {

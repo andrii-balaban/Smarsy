@@ -73,10 +73,10 @@ namespace Smarsy.Test
         public void Login_ShouldReturnExcpectedLogin()
         {
             // Arrange
-            Operational operational = CreateOperational();
+            SmarsyOperations smarsyOperations = CreateOperational();
 
             // Act
-            string studentLogin = operational.Student.Login;
+            string studentLogin = smarsyOperations.Student.Login;
 
             // Assert
             studentLogin.Should().Be("1");
@@ -124,11 +124,11 @@ namespace Smarsy.Test
             result.Should().Be(expected);
         }
 
-        private static Operational CreateOperational()
+        private static SmarsyOperations CreateOperational()
         {
             string login = "1";
 
-            return new Operational(new DataBaseStub(), login);
+            return new SmarsyOperations(new DataBaseStub(), login);
         }
     }
 }
