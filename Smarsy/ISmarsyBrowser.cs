@@ -5,7 +5,7 @@ namespace Smarsy
 {
     public interface ISmarsyBrowser
     {
-        IEnumerable<T> GetTableObjectFromPage<T>(string url, string entityNameForLog, int childId, bool isSkipHeader = true) where T : SmarsyElement;
+        IEnumerable<T> GetSmarsyElementFromPage<T>(string url, int childId) where T : SmarsyElement;
         void GoToLink(string url);
         void WaitForPageToLoad();
         IEnumerable<HomeWork> UpdateHomeWork(SmarsyOperations smarsyOperations, int smarsyChildId);

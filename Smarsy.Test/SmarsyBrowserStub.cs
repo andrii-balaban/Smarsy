@@ -6,7 +6,7 @@ namespace Smarsy.Test
 {
     public class SmarsyBrowserStub : ISmarsyBrowser
     {
-        public IEnumerable<T> GetTableObjectFromPage<T>(string url, string entityNameForLog, int childId, bool isSkipHeader = true) where T : SmarsyElement
+        public IEnumerable<T> GetSmarsyElementFromPage<T>(string url, int childId) where T : SmarsyElement
         {
             throw new NotImplementedException();
         }

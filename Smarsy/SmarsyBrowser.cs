@@ -21,7 +21,7 @@ namespace Smarsy
 
         private WebBrowser Browser { get; set; }
 
-        public IEnumerable<T> GetTableObjectFromPage<T>(string url, string entityNameForLog, int childId, bool isSkipHeader = true) where T : SmarsyElement
+        public IEnumerable<T> GetSmarsyElementFromPage<T>(string url, int childId) where T : SmarsyElement
         {
             GoToLinkWithChild(url, childId);
 
@@ -34,7 +34,7 @@ namespace Smarsy
                 .Skip(1) // skip the first table on the page
                 .Take(1) // take the only second table on the page
                 .SelectMany(row => row.GetElementsByTagName("tr").OfType<HtmlElement>())
-                .Skip(isSkipHeader ? 1 : 0) // skip header row
+                .Skip(1) // skip header row
                 .Select(_smarsyEntitiesFactory.CreateElementOfType<T>)
                 .ToArray();
 
@@ -44,7 +44,7 @@ namespace Smarsy
 
         private bool IsPageLoaded()
         {
-            return Browser.Document == null;
+            return Browser.Document != null;
         }
 
         private void GoToLinkWithChild(string url, int childId)
