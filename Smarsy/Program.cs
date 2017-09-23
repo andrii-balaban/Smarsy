@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Linq;
+using System.Reflection;
 using Smarsy.Logic;
 
 namespace Smarsy
@@ -15,38 +16,31 @@ namespace Smarsy
             if (!Parser.Default.ParseArguments(args, options))
                 return;
 
-            SmarsyOperations op = new SmarsyOperations(new SqlServerLogic(options.SmarsyLogin), new SmarsyBrowser(),  options.SmarsyLogin);
-            op.InitStudentFromDb();
+            SmarsyOperations smarsyOperations = new SmarsyOperations(new SqlServerLogic(options.SmarsyLogin), new SmarsyBrowser());
 
             //// options.Methods = "LoginToSmarsy,UpdateMarks,UpdateHomeWork,UpdateAds,UpdateStudents,UpdateRemarks";
             options.Methods = "LoginToSmarsy,UpdateRemarks";
 
-            InvokeMethods(options, op);
+            InvokeMethods(smarsyOperations, options);
 
-            SendEmails(options, op);
+            SendEmails(smarsyOperations, options);
         }
 
-        private static void SendEmails(CommandLineOptions options, SmarsyOperations op)
+        private static void SendEmails(SmarsyOperations op, CommandLineOptions options)
         {
-            string[] emailToList = options.EmailsTo.Split(',');
+            string[] emails = options.GetEmails().ToArray();
 
-            op.SendEmail(emailToList, options.EmailsFrom, options.EmailPassword);
+            op.SendEmail(emails, options.From, options.EmailPassword);
         }
 
-        private static void InvokeMethods(CommandLineOptions options, SmarsyOperations op)
+        private static void InvokeMethods(SmarsyOperations op, CommandLineOptions options)
         {
-            string[] methodNames = GetMethodNames(options);
+            string[] methodNames = options.GetMethods().ToArray();
 
             foreach (var methodName in methodNames)
             {
                 InvokeMethodByName(op, methodName);
             }
-        }
-
-        private static string[] GetMethodNames(CommandLineOptions options)
-        {
-            string[] methodNames = options.Methods.Split(',');
-            return methodNames;
         }
 
         private static void InvokeMethodByName(SmarsyOperations op, string methodName)

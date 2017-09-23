@@ -20,13 +20,8 @@ namespace Smarsy
         private readonly ISmarsyRepository _repository;
         private readonly ISmarsyBrowser _smarsyBrowser;
 
-        public SmarsyOperations(ISmarsyRepository repository, ISmarsyBrowser smarsyBrowser, string login)
+        public SmarsyOperations(ISmarsyRepository repository, ISmarsyBrowser smarsyBrowser)
         {
-            Student = new Student
-            {
-                Login = login
-            };
-
             _repository = repository;
             _smarsyBrowser = smarsyBrowser;
         }
@@ -35,17 +30,18 @@ namespace Smarsy
 
         public ISmarsyRepository Repository => _repository;
 
-
-        public void InitStudentFromDb()
+        public void LoginToSmarsy(string login)
         {
-            Logger.Info("Getting student info from database");
-            Student = _repository.GetStudentBySmarsyLogin(Student.Login);
-        }
+            LoadStudent(login);
 
-        public void LoginToSmarsy()
-        {
             _smarsyBrowser.GoToLink(SmarsyLink);
             _smarsyBrowser.Login(Student);
+        }
+
+        private void LoadStudent(string login)
+        {
+            Logger.Info("Getting student info from database");
+            Student = _repository.GetStudentBySmarsyLogin(login);
         }
 
         public void UpdateAds()
