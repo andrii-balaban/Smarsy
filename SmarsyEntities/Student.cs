@@ -53,7 +53,7 @@ namespace SmarsyEntities
 
                 if (i == 3)
                 {
-                    student.BirthDate = TextProcessor.GetDateFromText(birthDate, int.Parse(studentRow.InnerHtml));
+                    student.BirthDate = TextProcessor.Processor.GetDateFromText(birthDate, int.Parse(studentRow.InnerHtml));
                 }
 
                 i++;

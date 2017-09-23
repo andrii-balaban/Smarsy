@@ -22,7 +22,8 @@ namespace Smarsy
         public IEnumerable<T> GetTableObjectFromPage<T>(string url, string entityNameForLog, int childId, bool isSkipHeader = true) where T : SmarsyElement<T>
         {
             GoToLinkWithChild(url, childId);
-            if (Browser.Document == null)
+
+            if (!IsPageLoaded())
             {
                 return Enumerable.Empty<T>();
             }
@@ -35,9 +36,13 @@ namespace Smarsy
                 .Select(SmarsyElement<T>.GetElement<T>)
                 .ToArray();
 
-            Logger.Info($"Upserting {entityNameForLog} in database");
 
             return result;
+        }
+
+        private bool IsPageLoaded()
+        {
+            return Browser.Document == null;
         }
 
         private void GoToLinkWithChild(string url, int childId)
@@ -64,7 +69,7 @@ namespace Smarsy
 
         private void ClickOnLoginButton()
         {
-            if (Browser.Document == null)
+            if (!IsPageLoaded())
             {
                 return;
             }

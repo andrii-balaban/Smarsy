@@ -46,33 +46,41 @@ namespace Smarsy
 
         public void UpdateAds()
         {
-            var resutl = _smarsyBrowser.GetTableObjectFromPage<Ad>(AdsLink, "Ads", Student.SmarsyChildId).ToList();
+            List<Ad> resutl = _smarsyBrowser.GetTableObjectFromPage<Ad>(AdsLink, "Ads", Student.SmarsyChildId).ToList();
+
+            Logger.Info("Upserting Ads in database");
             _repository.UpsertAds(resutl);
         }
 
         public void UpdateMarks()
         {
-            var result =_smarsyBrowser.GetTableObjectFromPage<LessonMark>(MarksLink, "Marks", Student.SmarsyChildId).ToList();
+            List<LessonMark> result =_smarsyBrowser.GetTableObjectFromPage<LessonMark>(MarksLink, "Marks", Student.SmarsyChildId).ToList();
+
+            Logger.Info("Upserting LessonMark in database");
             _repository.UpserStudentAllLessonsMarks(result);
         }
 
         public void UpdateStudents()
         {
-            var students = _smarsyBrowser.GetTableObjectFromPage<Student>(StudentsLink, "Students", Student.SmarsyChildId).ToList();
+            List<Student> students = _smarsyBrowser.GetTableObjectFromPage<Student>(StudentsLink, "Students", Student.SmarsyChildId).ToList();
 
+            Logger.Info("Upserting Students in database");
             _repository.UpsertStudents(students);
         }
 
         public void UpdateRemarks()
         {
-            var remarks = _smarsyBrowser.GetTableObjectFromPage<Remark>(RemarksLink, "Remarks", Student.SmarsyChildId).ToList();
+            List<Remark> remarks = _smarsyBrowser.GetTableObjectFromPage<Remark>(RemarksLink, "Remarks", Student.SmarsyChildId).ToList();
+
+            Logger.Info("Upserting Remarks in database");
             _repository.UpsertRemarks(remarks);
         }
 
         public void UpdateHomeWork()
         {
-            var homeWorks = _smarsyBrowser.UpdateHomeWork(this).ToList();
+            List<HomeWork> homeWorks = _smarsyBrowser.UpdateHomeWork(this).ToList();
 
+            Logger.Info("Upserting Homework in database");
             Repository.UpsertHomeWorks(homeWorks);
         }
 

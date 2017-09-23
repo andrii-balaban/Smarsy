@@ -44,7 +44,7 @@ namespace Smarsy.Test
 
         public Student GetStudentBySmarsyLogin(string login)
         {
-            throw new NotImplementedException();
+            return new Student { Login = login };
         }
 
         public List<Student> GetStudentsWithBirthdayTomorrow()

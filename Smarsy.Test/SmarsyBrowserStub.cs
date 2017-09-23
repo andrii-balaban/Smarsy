@@ -13,7 +13,7 @@ namespace Smarsy.Test
 
         public void GoToLink(string url)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void WaitForPageToLoad()
@@ -38,7 +38,7 @@ namespace Smarsy.Test
 
         public void Login(Student student)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

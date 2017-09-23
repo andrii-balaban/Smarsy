@@ -4,6 +4,15 @@ namespace SmarsyEntities
 {
     public class TextProcessor
     {
+        private static TextProcessor _textProcessor;
+
+        public static TextProcessor Processor => _textProcessor ?? (_textProcessor = new TextProcessor());
+
+        protected TextProcessor()
+        {
+            
+        }
+
         public string GetTextBetweenSubstrings(string text, string from, string to)
         {
             var charFrom = text.IndexOf(@from, StringComparison.Ordinal) + @from.Length;
@@ -31,7 +40,7 @@ namespace SmarsyEntities
             return new DateTime(year, month, day);
         }
 
-        private static int GetMonthFromRussianName(string name)
+        private int GetMonthFromRussianName(string name)
         {
             switch (name)
             {
@@ -64,12 +73,12 @@ namespace SmarsyEntities
             return -1;
         }
 
-        private static int GetDayFromStringWithDayNumber(string date)
+        private int GetDayFromStringWithDayNumber(string date)
         {
             return int.Parse(date.Substring(0, 2).Trim());
         }
 
-        private static string GetMonthNameFromStringWithDayNumber(string date)
+        private string GetMonthNameFromStringWithDayNumber(string date)
         {
             return date.Substring(2, date.Length - 2).Trim();
         }

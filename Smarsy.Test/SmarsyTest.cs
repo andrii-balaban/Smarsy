@@ -15,7 +15,7 @@ namespace Smarsy.Test
         public void GetTextBetweenSubstrings_WhenSingleWordSeparatorsAreUsed_ShouldReturnExpected()
         {
             // Arrange
-            TextProcessor textProcessor = new TextProcessor();
+            TextProcessor textProcessor = TextProcessor.Processor;
 
             string text = "Some text to be parsed";
             string tagFrom = "Some";
@@ -74,6 +74,7 @@ namespace Smarsy.Test
         {
             // Arrange
             SmarsyOperations smarsyOperations = CreateOperational();
+            smarsyOperations.LoginToSmarsy("1");
 
             // Act
             string studentLogin = smarsyOperations.Student.Login;
@@ -87,7 +88,7 @@ namespace Smarsy.Test
         {
             // Arrange
             DateTime expected = new DateTime(2006, 1, 17);
-            TextProcessor textProcessor = new TextProcessor();
+            TextProcessor textProcessor = TextProcessor.Processor;
 
             // Act
             DateTime result = textProcessor.GetDateFromText("17 января", 11);
@@ -101,7 +102,7 @@ namespace Smarsy.Test
         {
             // Arrange
             DateTime expected = new DateTime(2007, 5, 2);
-            TextProcessor textProcessor = new TextProcessor();
+            TextProcessor textProcessor = TextProcessor.Processor;
 
             // Act
             DateTime result = textProcessor.GetDateFromText("2 мая", 10);
@@ -115,7 +116,7 @@ namespace Smarsy.Test
         {
             // Arrange
             DateTime expected = new DateTime(2005, 12, 17);
-            TextProcessor textProcessor = new TextProcessor();
+            TextProcessor textProcessor = TextProcessor.Processor;
 
             // Act
             DateTime result = textProcessor.GetDateFromText("17 декабря", 11);
@@ -126,9 +127,7 @@ namespace Smarsy.Test
 
         private static SmarsyOperations CreateOperational()
         {
-            string login = "1";
-
-            return new SmarsyOperations(new DataBaseStub(), new SmarsyBrowserStub(), login);
+            return new SmarsyOperations(new DataBaseStub(), new SmarsyBrowserStub());
         }
     }
 }

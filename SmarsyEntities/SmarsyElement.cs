@@ -5,8 +5,6 @@ namespace SmarsyEntities
 {
     public abstract class SmarsyElement<T>
     {
-        protected readonly TextProcessor TextProcessor = new TextProcessor();
-
         public static T GetElement<T>(HtmlElement row) where T : SmarsyElement<T>
         {
             return (Activator.CreateInstance(typeof(T)) as T).GetElement(row);
@@ -16,12 +14,12 @@ namespace SmarsyEntities
 
         protected string GetTextBetweenSubstrings(string text, string from, string to)
         {
-            return TextProcessor.GetTextBetweenSubstrings(text, @from, to);
+            return TextProcessor.Processor.GetTextBetweenSubstrings(text, @from, to);
         }
 
         protected string ChangeDateFormat(string date)
         {
-            return TextProcessor.ChangeDateFormat(date);
+            return TextProcessor.Processor.ChangeDateFormat(date);
         }
     }
 }
