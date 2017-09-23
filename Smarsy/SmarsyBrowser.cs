@@ -103,9 +103,9 @@ namespace Smarsy
             }
         }
 
-        public IEnumerable<HomeWork> UpdateHomeWork(SmarsyOperations smarsyOperations)
+        public IEnumerable<HomeWork> UpdateHomeWork(SmarsyOperations smarsyOperations, int smarsyChildId)
         {
-            GoToLink($"http://smarsy.ua/private/parent.php?jsid=Homework&child={smarsyOperations.Student.SmarsyChildId}&tab=Lesson");
+            GoToLink($"http://smarsy.ua/private/parent.php?jsid=Homework&child={smarsyChildId}&tab=Lesson");
 
             if (Browser.Document == null)
             {

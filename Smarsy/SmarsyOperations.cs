@@ -80,7 +80,7 @@ namespace Smarsy
 
         public void UpdateHomeWork()
         {
-            List<HomeWork> homeWorks = _smarsyBrowser.UpdateHomeWork(this).ToList();
+            List<HomeWork> homeWorks = _smarsyBrowser.UpdateHomeWork(this, Student.SmarsyChildId).ToList();
 
             Logger.Info("Upserting Homework in database");
             Repository.UpsertHomeWorks(homeWorks);

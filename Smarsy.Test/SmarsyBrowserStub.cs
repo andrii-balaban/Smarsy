@@ -21,7 +21,7 @@ namespace Smarsy.Test
             throw new NotImplementedException();
         }
 
-        public IEnumerable<HomeWork> UpdateHomeWork(SmarsyOperations smarsyOperations)
+        public IEnumerable<HomeWork> UpdateHomeWork(SmarsyOperations smarsyOperations, int smarsyChildId)
         {
             throw new NotImplementedException();
         }
