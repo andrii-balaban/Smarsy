@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-using System.Windows.Forms;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -80,19 +79,6 @@ namespace Smarsy.Test
 
             // Assert
             studentLogin.Should().Be("1");
-            }
-
-        [Test]
-        public void SmarsyBrowser_BrowserShouldNotBeNull()
-        {
-            // Arrange
-            Operational operational = CreateOperational();
-
-            // Act
-            WebBrowser browser = operational.SmarsyBrowser;
-
-            // Assert
-            browser.Should().NotBeNull();
         }
 
         [Test]
@@ -138,7 +124,7 @@ namespace Smarsy.Test
         {
             string login = "1";
 
-            return new Operational(login);
+            return new Operational(new DataBaseStub(), login);
         }
     }
 }

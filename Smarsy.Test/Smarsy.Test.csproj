@@ -70,6 +70,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Smarsy.Logic\Smarsy.Logic.csproj">
+      <Project>{B3B71B88-34FF-4100-9A08-269D91112964}</Project>
+      <Name>Smarsy.Logic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SmarsyEntities\SmarsyEntities.csproj">
       <Project>{3f0e9805-2df4-447f-9f8a-57648e2e12ee}</Project>
       <Name>SmarsyEntities</Name>
