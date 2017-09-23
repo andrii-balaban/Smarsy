@@ -17,7 +17,7 @@ namespace Smarsy.Logic
         List<Ad> GetNewAds();
         List<Remark> GetNewRemarks();
         List<HomeWork> GetHomeWorkForFuture();
-        List<LessonMark> GetStudentMarkSummary(int studentId);
+        List<LessonMark> GetStudentMarks(int studentId);
         void UpsertStudents(IList<Student> students);
         void UpsertRemarks(IList<Remark> remarks);
     }

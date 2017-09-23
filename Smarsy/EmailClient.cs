@@ -14,7 +14,7 @@
     {
         private readonly SqlServerLogic _sqlServerLogic = new SqlServerLogic();
 
-        public void SendEmail(int studentId, IEnumerable<string> emailToList,  string emailFrom, string fromPassword)
+        public void SendEmail(IEnumerable<LessonMark> marks, IEnumerable<string> emailToList,  string emailFrom, string fromPassword)
         {
             var subject = "Лизины оценки (" + DateTime.Now.ToShortDateString() + ")";
             var emailBody = new StringBuilder();
@@ -22,7 +22,7 @@
             emailBody.AppendWithDoubleBrTag(GenerateEmailForRemarks());
             emailBody.AppendWithDoubleBrTag(GenerateEmailForTomorrowBirthdays());
             emailBody.AppendWithDoubleBrTag(GenerateEmailForNewAds());
-            emailBody.AppendWithDoubleBrTag(GenerateEmailBodyForMarks(studentId));
+            emailBody.AppendWithDoubleBrTag(GenerateEmailBodyForMarks(marks));
             emailBody.AppendWithDoubleBrTag(GenerateEmailBodyForHomeWork());
 
             SendEmail(emailToList, subject, emailBody.ToString(), emailFrom, fromPassword);
@@ -168,9 +168,8 @@
             return result.ToString();
         }
 
-        private string GenerateEmailBodyForMarks(int studentId)
+        private string GenerateEmailBodyForMarks(IEnumerable<LessonMark> marks)
         {
-            List<LessonMark> marks = _sqlServerLogic.GetStudentMarkSummary(studentId);
             if (!marks.Any())
             {
                 return string.Empty;

@@ -19,29 +19,25 @@ namespace Smarsy
 
         private WebBrowser Browser { get; set; }
 
-        public void GetTableObjectFromPage<T>(
-            string url,
-            Func<HtmlElement, T> methodName,
-            string entityNameForLog,
-            Action<IList<T>> databaseProcessingMethodName,
-            int childId,
-            bool isSkipHeader = true)
+        public IEnumerable<T> GetTableObjectFromPage<T>(string url, string entityNameForLog, int childId, bool isSkipHeader = true) where T : SmarsyElement<T>
         {
             GoToLinkWithChild(url, childId);
             if (Browser.Document == null)
             {
-                return;
+                return Enumerable.Empty<T>();
             }
 
-            var result = Browser.Document.GetElementsByTagName("table").OfType<HtmlElement>()
+            IEnumerable<T> result = Browser.Document.GetElementsByTagName("table").OfType<HtmlElement>()
                 .Skip(1) // skip the first table on the page
                 .Take(1) // take the only second table on the page
                 .SelectMany(row => row.GetElementsByTagName("tr").OfType<HtmlElement>())
                 .Skip(isSkipHeader ? 1 : 0) // skip header row
-                .Select(methodName).ToArray();
+                .Select(SmarsyElement<T>.GetElement<T>)
+                .ToArray();
 
             Logger.Info($"Upserting {entityNameForLog} in database");
-            databaseProcessingMethodName(result);
+
+            return result;
         }
 
         private void GoToLinkWithChild(string url, int childId)
@@ -66,7 +62,7 @@ namespace Smarsy
             Thread.Sleep(500);
         }
 
-        public void ClickOnLoginButton()
+        private void ClickOnLoginButton()
         {
             if (Browser.Document == null)
             {
@@ -84,7 +80,7 @@ namespace Smarsy
             }
         }
 
-        public void FillTextBoxByElementId(string elementId, string value)
+        private void FillTextBoxByElementId(string elementId, string value)
         {
             if (Browser == null || Browser.Document == null || elementId == null)
             {
@@ -100,13 +96,13 @@ namespace Smarsy
             }
         }
 
-        public void UpdateHomeWork(Operational operational)
+        public IEnumerable<HomeWork> UpdateHomeWork(Operational operational)
         {
             GoToLink($"http://smarsy.ua/private/parent.php?jsid=Homework&child={operational.Student.SmarsyChildId}&tab=Lesson");
 
             if (Browser.Document == null)
             {
-                return;
+                return Enumerable.Empty<HomeWork>();
             }
 
             var homeWorks = new List<HomeWork>();
@@ -120,8 +116,9 @@ namespace Smarsy
                 if (separateLessonNameFromHomeWork++ % 2 == 0)
                 {
                     var lessonNameWithTeacher = el.InnerText.Replace("\r\n", string.Empty);
-                    var lessonName = operational.GetLessonNameFromLessonWithTeacher(lessonNameWithTeacher);
-                    var teacherName = operational.GetTeacherNameFromLessonWithTeacher(lessonNameWithTeacher, lessonName);
+                    var lessonName = GetLessonNameFromLessonWithTeacher(lessonNameWithTeacher);
+                    var teacherName = GetTeacherNameFromLessonWithTeacher(lessonNameWithTeacher, lessonName);
+
                     teacherId = operational.Repository.InsertTeacherIfNotExists(teacherName);
                     lessonId = operational.Repository.GetLessonIdByLessonShortName(lessonName);
                 }
@@ -138,9 +135,10 @@ namespace Smarsy
                                 continue;
                             }
 
-                            var tmp = operational.ProccessHomeWork(row);
+                            var tmp = HomeWork.GetElement<HomeWork>(row);
                             tmp.LessonId = lessonId;
                             tmp.TeacherId = teacherId;
+
                             if ((tmp.HomeWorkDescr != null) && !tmp.HomeWorkDescr.Trim().Equals(string.Empty))
                             {
                                 homeWorks.Add(tmp);
@@ -151,7 +149,24 @@ namespace Smarsy
             }
 
             Logger.Info("Upserting homeworks in database");
-            operational.Repository.UpsertHomeWorks(homeWorks);
+
+            return homeWorks;
+        }
+
+        public string GetLessonNameFromLessonWithTeacher(string lessonNameWithTeacher)
+        {
+            if (!lessonNameWithTeacher.Contains("("))
+            {
+                return lessonNameWithTeacher;
+            }
+
+            return lessonNameWithTeacher.Substring(0, lessonNameWithTeacher.IndexOf("(", StringComparison.Ordinal) - 1);
+        }
+
+        public string GetTeacherNameFromLessonWithTeacher(string lessonNameWithTeacher, string lessonName)
+        {
+            var result = lessonNameWithTeacher.Replace(lessonName, string.Empty).Replace("(", string.Empty).Replace(")", string.Empty).Trim();
+            return result;
         }
 
         public void Login(Student student)

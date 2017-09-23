@@ -241,7 +241,7 @@
             }
         }
 
-        public List<LessonMark> GetStudentMarkSummary(int studentId)
+        public List<LessonMark> GetStudentMarks(int studentId)
         {
             var result = new List<LessonMark>();
             using (var objconnection = new SqlConnection(_stringConn))

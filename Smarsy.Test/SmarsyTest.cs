@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
+using SmarsyEntities;
 
 namespace Smarsy.Test
 {
@@ -14,14 +15,14 @@ namespace Smarsy.Test
         public void GetTextBetweenSubstrings_WhenSingleWordSeparatorsAreUsed_ShouldReturnExpected()
         {
             // Arrange
-            Operational operational = CreateOperational();
+            TextProcessor textProcessor = new TextProcessor();
 
             string text = "Some text to be parsed";
             string tagFrom = "Some";
             string tagTo = "to";
 
             // Act
-            string result = operational.GetTextBetweenSubstrings(text, tagFrom, tagTo);
+            string result = textProcessor.GetTextBetweenSubstrings(text, tagFrom, tagTo);
 
             // Assert
             result.Should().Be(" text ");
@@ -31,12 +32,12 @@ namespace Smarsy.Test
         public void GetLessonNameFromLessonWithTeacher_WhenLessonContainsTeacherName_ShouldReturnLessonName()
         {
             // Arrange
-            Operational operational = CreateOperational();
+            SmarsyBrowser smarsyBrowser = new SmarsyBrowser();
 
             string expected = "Lesson name";
 
             // Act
-            string result = operational.GetLessonNameFromLessonWithTeacher("Lesson name (Teacher name)");
+            string result = smarsyBrowser.GetLessonNameFromLessonWithTeacher("Lesson name (Teacher name)");
 
             // Assert
             result.Should().Be(expected);
@@ -46,10 +47,10 @@ namespace Smarsy.Test
         public void GetLessonNameFromLessonWithTeacher_WhenLessonDoesNotContaineteacherName_ShouldReturnLessonName()
         {
             // Arrange
-            Operational operational = CreateOperational();
+            SmarsyBrowser smarsyBrowser = new SmarsyBrowser();
 
             // Act
-            string result = operational.GetLessonNameFromLessonWithTeacher("Lesson name");
+            string result = smarsyBrowser.GetLessonNameFromLessonWithTeacher("Lesson name");
 
             // Assert
             result.Should().Be("Lesson name");
@@ -59,10 +60,10 @@ namespace Smarsy.Test
         public void GetTeacherNameFromLessonWithTeacher_WhenLessonNameContainesTescherName_ShouldReturnTeacherName()
         {
             // Arrange
-            Operational operational = CreateOperational();
+            SmarsyBrowser smarsyBrowser = new SmarsyBrowser();
 
             // Act
-            string result = operational.GetTeacherNameFromLessonWithTeacher("Lesson name (Teacher name)", "Lesson name");
+            string result = smarsyBrowser.GetTeacherNameFromLessonWithTeacher("Lesson name (Teacher name)", "Lesson name");
 
             // Assert
             result.Should().Be("Teacher name");
@@ -86,9 +87,10 @@ namespace Smarsy.Test
         {
             // Arrange
             DateTime expected = new DateTime(2006, 1, 17);
+            TextProcessor textProcessor = new TextProcessor();
 
             // Act
-            DateTime result = Operational.GetDateFromText("17 января", 11);
+            DateTime result = textProcessor.GetDateFromText("17 января", 11);
             
             // Assert
             result.Should().Be(expected);
@@ -99,9 +101,10 @@ namespace Smarsy.Test
         {
             // Arrange
             DateTime expected = new DateTime(2007, 5, 2);
+            TextProcessor textProcessor = new TextProcessor();
 
             // Act
-            DateTime result = Operational.GetDateFromText("2 мая", 10);
+            DateTime result = textProcessor.GetDateFromText("2 мая", 10);
             
             // Assert
             result.Should().Be(expected);
@@ -112,9 +115,10 @@ namespace Smarsy.Test
         {
             // Arrange
             DateTime expected = new DateTime(2005, 12, 17);
+            TextProcessor textProcessor = new TextProcessor();
 
             // Act
-            DateTime result = Operational.GetDateFromText("17 декабря", 11);
+            DateTime result = textProcessor.GetDateFromText("17 декабря", 11);
             
             // Assert
             result.Should().Be(expected);

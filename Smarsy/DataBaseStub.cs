@@ -67,7 +67,7 @@ namespace Smarsy
             throw new NotImplementedException();
         }
 
-        public List<LessonMark> GetStudentMarkSummary(int studentId)
+        public List<LessonMark> GetStudentMarks(int studentId)
         {
             throw new NotImplementedException();
         }
