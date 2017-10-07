@@ -85,7 +85,7 @@
     <Compile Include="SmarsyBrowser\RemarksPage.cs" />
     <Compile Include="SmarsyBrowser\SmarsyPage.cs" />
     <Compile Include="SmarsyBrowser\StudentsPage.cs" />
-    <Compile Include="SmarsyOperations.cs" />
+    <Compile Include="Smarsy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmarsyBrowser\SmarsyBrowser.cs" />

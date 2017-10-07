@@ -8,11 +8,11 @@ namespace Smarsy.SmarsyBrowser
 {
     public class HomeworkPage : SmarsyPage<HomeWork>
     {
-        private readonly SmarsyOperations _smarsyOperations;
+        private readonly Smarsy _smarsy;
 
-        public HomeworkPage(int childId, SmarsyOperations smarsyOperations) : base(childId)
+        public HomeworkPage(int childId, Smarsy smarsy) : base(childId)
         {
-            _smarsyOperations = smarsyOperations;
+            _smarsy = smarsy;
         }
 
         protected override string PageLink => "http://smarsy.ua/private/parent.php?jsid=Homework&tab=Lesson";
@@ -36,8 +36,8 @@ namespace Smarsy.SmarsyBrowser
                     var lessonName = GetLessonNameFromLessonWithTeacher(lessonNameWithTeacher);
                     var teacherName = GetTeacherNameFromLessonWithTeacher(lessonNameWithTeacher, lessonName);
 
-                    teacherId = _smarsyOperations.Repository.InsertTeacherIfNotExists(teacherName);
-                    lessonId = _smarsyOperations.Repository.GetLessonIdByLessonShortName(lessonName);
+                    teacherId = _smarsy.Repository.InsertTeacherIfNotExists(teacherName);
+                    lessonId = _smarsy.Repository.GetLessonIdByLessonShortName(lessonName);
                 }
                 else
                 {

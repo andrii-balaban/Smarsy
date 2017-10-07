@@ -9,7 +9,7 @@ namespace Smarsy
     using NLog;
     using SmarsyEntities;
 
-    public class SmarsyOperations
+    public class Smarsy
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -17,7 +17,7 @@ namespace Smarsy
         private readonly ISmarsyBrowser _smarsyBrowser;
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        public SmarsyOperations(ISmarsyRepository repository, ISmarsyBrowser smarsyBrowser, IDateTimeProvider dateTimeProvider)
+        public Smarsy(ISmarsyRepository repository, ISmarsyBrowser smarsyBrowser, IDateTimeProvider dateTimeProvider)
         {
             _repository = repository;
             _smarsyBrowser = smarsyBrowser;

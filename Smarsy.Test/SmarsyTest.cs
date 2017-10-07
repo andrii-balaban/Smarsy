@@ -32,11 +32,11 @@ namespace Smarsy.Test
         public void Login_ShouldReturnExcpectedLogin()
         {
             // Arrange
-            SmarsyOperations smarsyOperations = CreateOperational();
-            smarsyOperations.LoginToSmarsy("1");
+            Smarsy smarsy = CreateOperational();
+            smarsy.LoginToSmarsy("1");
 
             // Act
-            string studentLogin = smarsyOperations.Student.Credentials.GetNetworkCredentials().UserName;
+            string studentLogin = smarsy.Student.Credentials.GetNetworkCredentials().UserName;
 
             // Assert
             studentLogin.Should().Be("1");
@@ -84,9 +84,9 @@ namespace Smarsy.Test
             result.Should().Be(expected);
         }
 
-        private static SmarsyOperations CreateOperational()
+        private static Smarsy CreateOperational()
         {
-            return new SmarsyOperations(new DataBaseStub(), new SmarsyBrowserStub(), new DateTimeProvider());
+            return new Smarsy(new DataBaseStub(), new SmarsyBrowserStub(), new DateTimeProvider());
         }
     }
 }

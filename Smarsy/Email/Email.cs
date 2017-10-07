@@ -10,7 +10,6 @@ namespace Smarsy.Email
 {
     public class Email
     {
-
         public Email(string from, IEnumerable<string> to, string subject)
         {
             _fromAddress = new MailAddress(from, "Smarsy наблюдатель");

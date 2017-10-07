@@ -20,24 +20,24 @@ namespace Smarsy
 
             var connectionString = ConfigurationManager.ConnectionStrings["SmarsyDbConnectionString"].ConnectionString;
 
-            SmarsyOperations smarsyOperations = new SmarsyOperations(new SmarsyRepository(connectionString), new SmarsyBrowser.SmarsyBrowser(), new DateTimeProvider());
+            Smarsy smarsy = new Smarsy(new SmarsyRepository(connectionString), new SmarsyBrowser.SmarsyBrowser(), new DateTimeProvider());
 
 
-            smarsyOperations.LoginToSmarsy("test");
+            smarsy.LoginToSmarsy("test");
 
-            InvokeMethods(smarsyOperations, options);
+            InvokeMethods(smarsy, options);
 
-            SendEmails(smarsyOperations, options);
+            SendEmails(smarsy, options);
         }
 
-        private static void SendEmails(SmarsyOperations op, CommandLineOptions options)
+        private static void SendEmails(Smarsy op, CommandLineOptions options)
         {
             string[] emails = options.GetEmails().ToArray();
 
             op.SendEmail(options.From, emails);
         }
 
-        private static void InvokeMethods(SmarsyOperations op, CommandLineOptions options)
+        private static void InvokeMethods(Smarsy op, CommandLineOptions options)
         {
             string[] methodNames = options.GetMethods().ToArray();
 
@@ -47,7 +47,7 @@ namespace Smarsy
             }
         }
 
-        private static void InvokeMethodByName(SmarsyOperations op, string methodName)
+        private static void InvokeMethodByName(Smarsy op, string methodName)
         {
             Type classType = op.GetType();
             MethodInfo methodInfo = classType.GetMethod(methodName.Trim());
