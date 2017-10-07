@@ -33,7 +33,7 @@ namespace Smarsy.Test
         {
             // Arrange
             Smarsy smarsy = CreateOperational();
-            smarsy.LoginToSmarsy("1");
+            smarsy.Login("1");
 
             // Act
             string studentLogin = smarsy.Student.Credentials.GetNetworkCredentials().UserName;

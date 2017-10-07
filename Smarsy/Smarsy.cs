@@ -28,7 +28,7 @@ namespace Smarsy
 
         public ISmarsyRepository Repository => _repository;
 
-        public void LoginToSmarsy(string login)
+        public void Login(string login)
         {
             LoadStudent(login);
 
@@ -92,7 +92,7 @@ namespace Smarsy
 
             Logger.Info($"Sending email to {string.Join(",", emailsArray)}");
             
-            Email.Email email = CreatEmail(emailFrom, emailsTo);
+            Email.Email email = CreatEmail(emailFrom, emailsArray);
 
             new EmailClient().SendEmail(email, Student.Credentials);
         }

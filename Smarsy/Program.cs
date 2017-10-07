@@ -15,15 +15,14 @@ namespace Smarsy
         {
             var options = new CommandLineOptions();
 
-            //if (!Parser.Default.ParseArguments(args, options))
-            //    return;
+            if (!Parser.Default.ParseArguments(args, options))
+                return;
 
             var connectionString = ConfigurationManager.ConnectionStrings["SmarsyDbConnectionString"].ConnectionString;
 
             Smarsy smarsy = new Smarsy(new SmarsyRepository(connectionString), new SmarsyBrowser.SmarsyBrowser(), new DateTimeProvider());
 
-
-            smarsy.LoginToSmarsy("test");
+            smarsy.Login("test");
 
             InvokeMethods(smarsy, options);
 
