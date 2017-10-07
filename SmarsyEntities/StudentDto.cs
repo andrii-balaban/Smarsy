@@ -4,18 +4,8 @@ namespace SmarsyEntities
 {
     using System;
 
-    public class Student : SmarsyElement
+    public class StudentDto
     {
-        public Student()
-        {
-        }
-
-        public Student(string login, string password)
-        {
-            Login = login;
-            Password = password;
-        }
-
         public string Login { get; set; }
 
         public string Password { get; set; }
@@ -27,6 +17,45 @@ namespace SmarsyEntities
         public int SmarsyChildId { get; set; }
 
         public DateTime BirthDate { get; set; }
+    }
+
+    public class SmarsyStudent : SmarsyElement
+    {
+        private readonly StudentDto _studentDto;
+
+        public SmarsyStudent()
+        {
+            _studentDto = new StudentDto();
+        }
+
+        public SmarsyStudent(StudentDto student)
+        {
+            _studentDto = student;
+            Credentials = new SmarsyCredentials(student.Login, student.Password);
+        }
+        
+        public int StudentId => _studentDto.StudentId;
+
+        public string Name
+        {
+            get => _studentDto.Name;
+            set => _studentDto.Name = value;
+        }
+
+        public int SmarsyChildId => _studentDto.SmarsyChildId;
+
+        public DateTime BirthDate
+        {
+            get => _studentDto.BirthDate;
+            set => _studentDto.BirthDate = value;
+        }
+
+        public SmarsyCredentials Credentials { get; }
+
+        public StudentDto ToDto()
+        {
+            return _studentDto;
+        }
 
         public override void ParseFromHtmlElement(HtmlElement row)
         {

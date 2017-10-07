@@ -24,7 +24,7 @@ namespace Smarsy
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public Student Student { get; set; }
+        public SmarsyStudent Student { get; set; }
 
         public ISmarsyRepository Repository => _repository;
 
@@ -32,7 +32,7 @@ namespace Smarsy
         {
             LoadStudent(login);
 
-            _smarsyBrowser.Login(new LoginPage(Student.Login, Student.Password));
+            _smarsyBrowser.Login(new LoginPage(Student));
         }
 
         private void LoadStudent(string login)
@@ -62,7 +62,7 @@ namespace Smarsy
         public void UpdateStudents()
         {
             StudentsPage marksPage = new StudentsPage(Student.SmarsyChildId);
-            List<Student> students = _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
+            List<SmarsyStudent> students = _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
 
             Logger.Info("Upserting Students in database");
             _repository.UpsertStudents(students);
@@ -86,15 +86,25 @@ namespace Smarsy
             Repository.UpsertHomeWorks(homeWorks);
         }
 
-        public void SendEmail(IEnumerable<string> emails, string emailFrom, string password)
+        public void SendEmail(string emailFrom, IEnumerable<string> emailsTo)
         {
-            string[] emailsArray = emails.ToArray();
+            string[] emailsArray = emailsTo.ToArray();
 
             Logger.Info($"Sending email to {string.Join(",", emailsArray)}");
+            
+            Email.Email email = CreatEmail(emailFrom, emailsTo);
 
+            new EmailClient().SendEmail(email, Student.Credentials);
+        }
+
+        private Email.Email CreatEmail(string emailFrom, IEnumerable<string> emailsTo)
+        {
             string subject = CreateEmailSubject();
 
             Email.Email email = new EmailBuilder()
+                .WithFromAddress(emailFrom)
+                .WithToAddresses(emailsTo)
+                .WithSubject(subject)
                 .WithHomeworks(Repository.GetHomeWorkForFuture())
                 .WithTomorrowBirthDayStudents(Repository.GetStudentsWithBirthdayTomorrow())
                 .WithRemarks(Repository.GetNewRemarks())
@@ -102,7 +112,7 @@ namespace Smarsy
                 .WithMarks(Repository.GetStudentMarks(Student.StudentId))
                 .Build();
 
-            new EmailClient().SendEmail(email, emailsArray, emailFrom, password, subject);
+            return email;
         }
 
         private string CreateEmailSubject()

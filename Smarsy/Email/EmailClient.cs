@@ -1,46 +1,25 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Net.Mail;
+﻿using System.Net.Mail;
+using SmarsyEntities;
 
 namespace Smarsy.Email
 {
     public class EmailClient
     {
-        public void SendEmail(Email email, IEnumerable<string> emailToList,  string emailFrom, string fromPassword, string subject)
+        public void SendEmail(Email email, SmarsyCredentials credentials)
         {
-            var emailBody = email.GenerateEmailBody();
-
-            SendEmail(emailToList, subject, emailBody.ToString(), emailFrom, fromPassword);
-        }
-
-        private void SendEmail(IEnumerable<string> emailTo, string subject, string body, string emailFrom, string fromPassword)
-        {
-            var fromAddress = new MailAddress(emailFrom, "Smarsy наблюдатель");
-
-            var smtp = new SmtpClient
+            using (var mail = email.CreateMessage())
             {
-                Host = "smtp.gmail.com",
-                Port = 587,
-                EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
-            };
-
-            using (var message = new MailMessage()
-            {
-                From = fromAddress,
-                Subject = subject,
-                Body = body
-            })
-            {
-                foreach (var mail in emailTo)
+                var smtp = new SmtpClient
                 {
-                    message.To.Add(mail);
-                }
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = credentials.GetNetworkCredentials()
+                };
 
-                message.IsBodyHtml = true;
-                smtp.Send(message);
+                smtp.Send(mail);
             }
         }
     }

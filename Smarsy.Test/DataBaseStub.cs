@@ -42,12 +42,12 @@ namespace Smarsy.Test
             throw new NotImplementedException();
         }
 
-        public Student GetStudentBySmarsyLogin(string login)
+        public SmarsyStudent GetStudentBySmarsyLogin(string login)
         {
-            return new Student { Login = login };
+            return new SmarsyStudent(new StudentDto { Login = login, Password = string.Empty});
         }
 
-        public List<Student> GetStudentsWithBirthdayTomorrow()
+        public List<StudentDto> GetStudentsWithBirthdayTomorrow()
         {
             throw new NotImplementedException();
         }
@@ -72,7 +72,7 @@ namespace Smarsy.Test
             throw new NotImplementedException();
         }
 
-        public void UpsertStudents(IList<Student> students)
+        public void UpsertStudents(IList<SmarsyStudent> students)
         {
             throw new NotImplementedException();
         }

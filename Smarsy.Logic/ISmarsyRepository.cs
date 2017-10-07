@@ -12,13 +12,13 @@ namespace Smarsy.Logic
         int GetLessonIdByLessonShortName(string lessonName);
         int InsertTeacherIfNotExists(string teacherName);
         int GetLessonIdByName(string markLessonName);
-        Student GetStudentBySmarsyLogin(string login);
-        List<Student> GetStudentsWithBirthdayTomorrow();
+        SmarsyStudent GetStudentBySmarsyLogin(string login);
+        List<StudentDto> GetStudentsWithBirthdayTomorrow();
         List<Ad> GetNewAds();
         List<Remark> GetNewRemarks();
         List<HomeWork> GetHomeWorkForFuture();
         List<LessonMark> GetStudentMarks(int studentId);
-        void UpsertStudents(IList<Student> students);
+        void UpsertStudents(IList<SmarsyStudent> students);
         void UpsertRemarks(IList<Remark> remarks);
     }
 }

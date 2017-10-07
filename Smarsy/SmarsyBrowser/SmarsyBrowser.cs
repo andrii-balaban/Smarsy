@@ -46,8 +46,7 @@ namespace Smarsy.SmarsyBrowser
         public void Login(LoginPage page)
         {
             GoToPage(page);
-
-            page.EnterLogin();
+            page.EnterCredentials();
 
             WaitForPageToLoad();
         }

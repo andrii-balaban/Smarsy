@@ -1,29 +1,32 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Windows.Forms;
+using SmarsyEntities;
 
 namespace Smarsy.SmarsyBrowser
 {
     public class LoginPage : Page
     {
-        private readonly string _login;
-        private readonly string _password;
-
-        public LoginPage(string login, string password)
-        {
-            _password = password;
-            _login = login;
-        }
-
         protected override string PageLink => "http://www.smarsy.ua";
 
-        public void EnterLogin()
+        private readonly SmarsyStudent _smarsyStudent;
+
+        public LoginPage(SmarsyStudent student)
         {
-            FillTextBoxByElementId("username", _login);
-            FillTextBoxByElementId("password", _password);
+            _smarsyStudent = student;
+        }
+
+        public void EnterCredentials()
+        {
+            NetworkCredential credentials = _smarsyStudent.Credentials.GetNetworkCredentials();
+            FillElementWithValue("username", credentials.UserName);
+            FillElementWithValue("password", credentials.Password);
 
             ClickOnLoginButton();
         }
 
-        private void FillTextBoxByElementId(string elementId, string value)
+        private void FillElementWithValue(string elementId, string value)
         {
             if (!IsPageLoaded() || elementId == null)
             {
@@ -31,13 +34,14 @@ namespace Smarsy.SmarsyBrowser
             }
 
             var element = Document.GetElementById(elementId);
-            if (element != null)
+            if (element == null)
             {
-                element.InnerText = value;
+                throw new ApplicationException($"{elementId} was not found.");
             }
+
+            element.InnerText = value;
         }
-
-
+        
         private void ClickOnLoginButton()
         {
             if (!IsPageLoaded())
@@ -45,15 +49,19 @@ namespace Smarsy.SmarsyBrowser
                 return;
             }
 
-            var bclick = Document.GetElementsByTagName("input");
-            foreach (HtmlElement btn in bclick)
+            HtmlElement button = GetSubmitButton();
+
+            if (button == null)
             {
-                var name = btn.Name;
-                if (name == "submit")
-                {
-                    btn.InvokeMember("click");
-                }
+                throw new ApplicationException("Submit button was not found");
             }
+
+            button.InvokeMember("click");
+        }
+
+        private HtmlElement GetSubmitButton()
+        {
+            return Document.GetElementsByTagName("input").OfType<HtmlElement>().FirstOrDefault(e => e.Name == "submit");
         }
     }
 }

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmarsyEntities;
 
 namespace Smarsy.Email
@@ -9,11 +11,35 @@ namespace Smarsy.Email
 
         private IEnumerable<LessonMark> _marks;
 
-        private IEnumerable<Student> _tomorrowBirsdayStudents;
+        private IEnumerable<StudentDto> _tomorrowBirsdayStudents;
 
         private IEnumerable<Remark> _remark;
 
         private IEnumerable<Ad> _ads;
+
+        private string _subject;
+
+        private string _fromAddress;
+
+        private string[] _toAddresses;
+
+        public EmailBuilder WithFromAddress(string fromAddress)
+        {
+            _fromAddress = fromAddress;
+            return this;
+        }
+
+        public EmailBuilder WithToAddresses(IEnumerable<string> toAddresses)
+        {
+            _toAddresses = toAddresses.ToArray();
+            return this;
+        }
+
+        public EmailBuilder WithSubject(string subject)
+        {
+            _subject = subject;
+            return this;
+        }
 
         public EmailBuilder WithHomeworks(List<HomeWork> homeWork)
         {
@@ -27,7 +53,7 @@ namespace Smarsy.Email
             return this;
         }
 
-        public EmailBuilder WithTomorrowBirthDayStudents(IEnumerable<Student> tomorrowBirsdays)
+        public EmailBuilder WithTomorrowBirthDayStudents(IEnumerable<StudentDto> tomorrowBirsdays)
         {
             _tomorrowBirsdayStudents = tomorrowBirsdays;
             return this;
@@ -47,7 +73,13 @@ namespace Smarsy.Email
 
         public Email Build()
         {
-            Email email =  new Email();
+            if (string.IsNullOrEmpty(_fromAddress))
+                throw new ApplicationException("From address should be provided");
+
+            if (_toAddresses == null || !_toAddresses.Any())
+                throw  new ApplicationException("At least one TO address should be provided");
+
+            Email email =  new Email(_fromAddress, _toAddresses, _subject);
 
             email.AddAds(_ads);
             email.AddHomeWork(_homeworks);

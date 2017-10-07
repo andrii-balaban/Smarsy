@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using Smarsy.Extensions;
 using SmarsyEntities;
@@ -9,15 +10,30 @@ namespace Smarsy.Email
 {
     public class Email
     {
-        private HomeWork[] _homework;
 
-        private LessonMark[] _marks;
+        public Email(string from, IEnumerable<string> to, string subject)
+        {
+            _fromAddress = new MailAddress(from, "Smarsy наблюдатель");
+            _toAddresses = to.ToArray();
+            _subject = subject;
+        }
 
-        private Student[] _tomorrowBirsdays;
+        private HomeWork[] _homework = new HomeWork[0];
 
-        private Remark[] _remarks;
+        private LessonMark[] _marks = new LessonMark[0];
 
-        private Ad[] _ads;
+        private StudentDto[] _tomorrowBirsdays = new StudentDto[0];
+
+        private Remark[] _remarks = new Remark[0];
+
+        private Ad[] _ads = new Ad[0];
+
+        private readonly string _subject;
+
+        private readonly MailAddress _fromAddress;
+
+        private readonly string[] _toAddresses;
+
 
         public void AddHomeWork(IEnumerable<HomeWork> homeWork)
         {
@@ -39,12 +55,32 @@ namespace Smarsy.Email
             _ads = ads.ToArray();
         }
 
-        public void AddNextDayBirthDayStudents(IEnumerable<Student> students)
+        public void AddNextDayBirthDayStudents(IEnumerable<StudentDto> students)
         {
             _tomorrowBirsdays = students.ToArray();
         }
+        
+        public MailMessage CreateMessage()
+        {
+            var message = new MailMessage()
+            {
+                From = _fromAddress,
+                Subject = _subject,
+                Body = GenerateEmailBody()
+            };
 
-        public StringBuilder GenerateEmailBody()
+            foreach (var mail in _toAddresses)
+            {
+                message.To.Add(mail);
+            }
+
+            message.IsBodyHtml = true;
+
+
+            return message;
+        }
+
+        private string GenerateEmailBody()
         {
             var emailBody = new StringBuilder();
 
@@ -54,7 +90,7 @@ namespace Smarsy.Email
             emailBody.AppendWithDoubleBrTag(GenerateEmailBodyForMarks());
             emailBody.AppendWithDoubleBrTag(GenerateEmailBodyForHomeWork());
 
-            return emailBody;
+            return emailBody.ToString();
         }
 
         private string GenerateEmailBodyForHomeWork()

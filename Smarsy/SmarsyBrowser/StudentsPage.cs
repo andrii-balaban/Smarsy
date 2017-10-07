@@ -5,7 +5,7 @@ using SmarsyEntities;
 
 namespace Smarsy.SmarsyBrowser
 {
-    public class StudentsPage : SmarsyPage<Student>
+    public class StudentsPage : SmarsyPage<SmarsyStudent>
     {
         public StudentsPage(int childId) : base(childId)
         {
@@ -13,15 +13,16 @@ namespace Smarsy.SmarsyBrowser
 
         protected override string PageLink => "http://smarsy.ua/private/parent.php?jsid=Grade&lesson=0&tab=List";
 
-        public override IEnumerable<Student> GetSmarsyElementsFromPage()
+        public override IEnumerable<SmarsyStudent> GetSmarsyElementsFromPage()
         {
-            return GetPageTableRows().Select(CreateStudent);
+            return GetPageTableRows().Select(Parse);
         }
 
-        private static Student CreateStudent(HtmlElement r)
+        private static SmarsyStudent Parse(HtmlElement r)
         {
-            Student student = new Student();
+            SmarsyStudent student = new SmarsyStudent();
             student.ParseFromHtmlElement(r);
+
             return student;
         }
     }

@@ -36,7 +36,7 @@ namespace Smarsy.Test
             smarsyOperations.LoginToSmarsy("1");
 
             // Act
-            string studentLogin = smarsyOperations.Student.Login;
+            string studentLogin = smarsyOperations.Student.Credentials.GetNetworkCredentials().UserName;
 
             // Assert
             studentLogin.Should().Be("1");

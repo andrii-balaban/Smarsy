@@ -105,9 +105,10 @@
             }
         }
 
-        public Student GetStudentBySmarsyLogin(string login)
+        public SmarsyStudent GetStudentBySmarsyLogin(string login)
         {
-            var result = new Student();
+            SmarsyStudent student = null;
+
             using (var objconnection = new SqlConnection(_stringConn))
             {
                 objconnection.Open();
@@ -120,22 +121,37 @@
                     var res = objcmd.ExecuteReader();
                     while (res.Read())
                     {
-                        result.StudentId = int.Parse(res["Id"].ToString());
-                        result.Name = res["Name"].ToString();
-                        result.Login = res["Login"].ToString();
-                        result.Password = res["Password"].ToString();
-                        result.SmarsyChildId = int.Parse(res["SmarsyChildId"].ToString());
-                        result.BirthDate = Convert.ToDateTime(res["BirthDate"].ToString());
+                        student =  new SmarsyStudent(Parse(res));
                     }
                 }
-
-                return result;
             }
+
+            return student;
         }
 
-        public List<Student> GetStudentsWithBirthdayTomorrow()
+        private StudentDto Parse(SqlDataReader res)
         {
-            var students = new List<Student>();
+            int studentId = int.Parse(res["Id"].ToString());
+            string name = res["Name"].ToString();
+            string login = res["Login"].ToString();
+            string password = res["Password"].ToString();
+            int smarsyChildId = int.Parse(res["SmarsyChildId"].ToString());
+            DateTime birthDate = Convert.ToDateTime(res["BirthDate"].ToString());
+
+            return new StudentDto
+            {
+                Login = login,
+                Password = password,
+                StudentId = studentId,
+                Name = name,
+                SmarsyChildId = smarsyChildId,
+                BirthDate = birthDate
+            };
+        }
+
+        public List<StudentDto> GetStudentsWithBirthdayTomorrow()
+        {
+            var students = new List<StudentDto>();
             using (var objconnection = new SqlConnection(_stringConn))
             {
                 objconnection.Open();
@@ -146,7 +162,7 @@
                     var res = objcmd.ExecuteReader();
                     while (res.Read())
                     {
-                        students.Add(new Student()
+                        students.Add(new StudentDto()
                         {
                             StudentId = int.Parse(res["Id"].ToString()),
                             Name = res["Name"].ToString(),
@@ -282,11 +298,11 @@
             return result;
         }
 
-        public void UpsertStudents(IList<Student> students)
+        public void UpsertStudents(IList<SmarsyStudent> students)
         {
             foreach (var student in students)
             {
-                UpsertStudent(student);
+                UpsertStudent(student.ToDto());
             }
         }
 
@@ -323,7 +339,7 @@
             }
         }
 
-        private void UpsertStudent(Student student)
+        private void UpsertStudent(StudentDto student)
         {
             using (var objconnection = new SqlConnection(_stringConn))
             {

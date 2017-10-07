@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
 using Smarsy.Logic;
-using SmarsyEntities;
 
 namespace Smarsy
 {
@@ -14,6 +13,7 @@ namespace Smarsy
         private static void Main(string[] args)
         {
             var options = new CommandLineOptions();
+
             if (!Parser.Default.ParseArguments(args, options))
                 return;
 
@@ -31,7 +31,7 @@ namespace Smarsy
         {
             string[] emails = options.GetEmails().ToArray();
 
-            op.SendEmail(emails, options.From, options.EmailPassword);
+            op.SendEmail(options.From, emails);
         }
 
         private static void InvokeMethods(SmarsyOperations op, CommandLineOptions options)
