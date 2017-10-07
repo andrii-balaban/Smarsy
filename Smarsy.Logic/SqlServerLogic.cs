@@ -11,14 +11,13 @@ namespace Smarsy.Logic
 
     public class SqlServerLogic : IDatabaseLogic, ISmarsyRepository
     {
-        private readonly string _stringConn =
-            "Data Source = LT-214871\\MSSQLEXPRESS;Initial Catalog=Smarsy; Integrated Security = True; Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout = 60; Encrypt=False;TrustServerCertificate=True";
-        ////"Data Source=(localdb)\\ProjectsV13;Initial Catalog=Smarsy;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True";
         private string _smarsyLogin;
 
-        public SqlServerLogic(string smarsyLogin)
+        private readonly string _connextionString;
+
+        public SqlServerLogic(string connextionString)
         {
-            _smarsyLogin = smarsyLogin;
+            _connextionString = connextionString;
         }
 
         public SqlServerLogic()
@@ -49,23 +48,20 @@ namespace Smarsy.Logic
             }
         }
 
-        public void UpserStudentAllLessonsMarks(IList<LessonMark> marks)
+        public void UpserStudentAllLessonsMarks(SmarsyStudent student, IList<LessonMark> marks)
         {
-            var studentId = GetStudentIdBySmarsyLogin(_smarsyLogin);
             foreach (var mark in marks)
             {
                 var lessonId = GetLessonIdByName(mark.LessonName);
-                UpsertStudentMarks(studentId, lessonId, mark.Marks);
+                UpsertStudentMarks(student.StudentId, lessonId, mark.Marks);
             }
         }
 
         public int GetLessonIdByLessonShortName(string lessonName)
         {
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-
-                using (var objcmd = new SqlCommand("select dbo.fn_GetLessonIdByLessonShortName(@lessonName)", objconnection))
+                using (var objcmd = new SqlCommand("select dbo.fn_GetLessonIdByLessonShortName(@lessonName)", connection))
                 {
                     objcmd.CommandType = CommandType.Text;
                     objcmd.Parameters.AddWithValue("@lessonName", lessonName);
@@ -77,10 +73,9 @@ namespace Smarsy.Logic
 
         public int InsertTeacherIfNotExists(string teacherName)
         {
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-                using (var objcmd = new SqlCommand("dbo.p_InsertTeacherIfNotExists", objconnection))
+                using (var objcmd = new SqlCommand("dbo.p_InsertTeacherIfNotExists", connection))
                 {
                     objcmd.CommandType = CommandType.StoredProcedure;
                     objcmd.Parameters.Add("@teacherName", SqlDbType.NVarChar, 100);
@@ -94,11 +89,9 @@ namespace Smarsy.Logic
 
         public int GetLessonIdByName(string markLessonName)
         {
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-
-                using (var objcmd = new SqlCommand("select dbo.fn_GetLessonIdByLessonName(@lessonName)", objconnection))
+                using (var objcmd = new SqlCommand("select dbo.fn_GetLessonIdByLessonName(@lessonName)", connection))
                 {
                     objcmd.CommandType = CommandType.Text;
                     objcmd.Parameters.AddWithValue("@lessonName", markLessonName);
@@ -112,10 +105,9 @@ namespace Smarsy.Logic
         {
             SmarsyStudent student = null;
 
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-                using (var objcmd = new SqlCommand("dbo.p_GetStudentBySmarsyId", objconnection))
+                using (var objcmd = new SqlCommand("dbo.p_GetStudentBySmarsyId", connection))
                 {
                     objcmd.CommandType = CommandType.StoredProcedure;
                     objcmd.Parameters.Add("@login", SqlDbType.VarChar, 50);
@@ -164,10 +156,9 @@ namespace Smarsy.Logic
         public List<StudentDto> GetStudentsWithBirthdayTomorrow()
         {
             var students = new List<StudentDto>();
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-                using (var objcmd = new SqlCommand("dbo.p_GetStudentsWithBirthdayTomorrow", objconnection))
+                using (var objcmd = new SqlCommand("dbo.p_GetStudentsWithBirthdayTomorrow", connection))
                 {
                     objcmd.CommandType = CommandType.StoredProcedure;
 
@@ -192,10 +183,9 @@ namespace Smarsy.Logic
         public List<Ad> GetNewAds()
         {
             var ads = new List<Ad>();
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-                using (var objcmd = new SqlCommand("dbo.p_GetNewAds", objconnection))
+                using (var objcmd = new SqlCommand("dbo.p_GetNewAds", connection))
                 {
                     objcmd.CommandType = CommandType.StoredProcedure;
 
@@ -217,10 +207,9 @@ namespace Smarsy.Logic
         public List<Remark> GetNewRemarks()
         {
             var remarks = new List<Remark>();
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-                using (var objcmd = new SqlCommand("dbo.p_GetNewRemarks", objconnection))
+                using (var objcmd = new SqlCommand("dbo.p_GetNewRemarks", connection))
                 {
                     objcmd.CommandType = CommandType.StoredProcedure;
 
@@ -245,10 +234,9 @@ namespace Smarsy.Logic
         {
             var result = new List<HomeWork>();
 
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-                using (var objcmd = new SqlCommand("dbo.p_GetHomeWorkForFuture", objconnection))
+                using (var objcmd = new SqlCommand("dbo.p_GetHomeWorkForFuture", connection))
                 {
                     objcmd.CommandType = CommandType.StoredProcedure;
 
@@ -272,10 +260,9 @@ namespace Smarsy.Logic
         public List<LessonMark> GetStudentMarks(int studentId)
         {
             var result = new List<LessonMark>();
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-                using (var objcmd = new SqlCommand("dbo.p_GetStudentMarkSummary", objconnection))
+                using (var objcmd = new SqlCommand("dbo.p_GetStudentMarkSummary", connection))
                 {
                     objcmd.CommandType = CommandType.StoredProcedure;
                     objcmd.Parameters.Add("@studentId", SqlDbType.VarChar, 50);
@@ -333,10 +320,9 @@ namespace Smarsy.Logic
 
         private void UpsertRemark(Remark remark)
         {
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-                using (var objcmd = new SqlCommand("dbo.p_UpsertRemark", objconnection))
+                using (var objcmd = new SqlCommand("dbo.p_UpsertRemark", connection))
                 {
                     objcmd.CommandType = CommandType.StoredProcedure;
                     objcmd.Parameters.Add("@remarkText", SqlDbType.NVarChar, -1);
@@ -353,10 +339,9 @@ namespace Smarsy.Logic
 
         private void UpsertStudent(StudentDto student)
         {
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-                using (var objcmd = new SqlCommand("dbo.p_UpsertStudent", objconnection))
+                using (var objcmd = new SqlCommand("dbo.p_UpsertStudent", connection))
                 {
                     objcmd.CommandType = CommandType.StoredProcedure;
                     objcmd.Parameters.Add("@studentName", SqlDbType.NVarChar, 100);
@@ -372,10 +357,9 @@ namespace Smarsy.Logic
         private List<StudentMark> UpsertStudentMarks(int studentId, int lessonId, List<StudentMark> marks)
         {
             var result = new List<StudentMark>();
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-                using (var objcmd = new SqlCommand("dbo.p_UpsertStudentMarksByLesson", objconnection))
+                using (var objcmd = new SqlCommand("dbo.p_UpsertStudentMarksByLesson", connection))
                 {
                     objcmd.CommandType = CommandType.StoredProcedure;
                     objcmd.Parameters.Add("@studentId", SqlDbType.Int);
@@ -416,11 +400,9 @@ namespace Smarsy.Logic
 
         private int GetStudentIdBySmarsyLogin(string login)
         {
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-
-                using (var objcmd = new SqlCommand("select dbo.GetStudentIdBySmarsyLogin(@login)", objconnection))
+                using (var objcmd = new SqlCommand("select dbo.GetStudentIdBySmarsyLogin(@login)", connection))
                 {
                     objcmd.CommandType = CommandType.Text;
                     objcmd.Parameters.AddWithValue("@login", login);
@@ -432,10 +414,9 @@ namespace Smarsy.Logic
 
         private void UpsertHomeWork(HomeWork hw)
         {
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-                using (var objcmd = new SqlCommand("dbo.p_UpsertHomeWork", objconnection))
+                using (var objcmd = new SqlCommand("dbo.p_UpsertHomeWork", connection))
                 {
                     objcmd.CommandType = CommandType.StoredProcedure;
                     objcmd.Parameters.Add("@lessonId", SqlDbType.Int);
@@ -454,10 +435,9 @@ namespace Smarsy.Logic
 
         private void InsertLessonIfNotExists(string lesson)
         {
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-                using (var objcmd = new SqlCommand("dbo.p_InsertLessonIfNotExists", objconnection))
+                using (var objcmd = new SqlCommand("dbo.p_InsertLessonIfNotExists", connection))
                 {
                     objcmd.CommandType = CommandType.StoredProcedure;
                     objcmd.Parameters.Add("@lessonName", SqlDbType.NVarChar, 100);
@@ -470,10 +450,9 @@ namespace Smarsy.Logic
 
         private void InsertAdIfNotExists(Ad ad)
         {
-            using (var objconnection = new SqlConnection(_stringConn))
+            using (SqlConnection connection = CreateDbConnection())
             {
-                objconnection.Open();
-                using (var objcmd = new SqlCommand("dbo.p_InsertAdsIfNotExists", objconnection))
+                using (var objcmd = new SqlCommand("dbo.p_InsertAdsIfNotExists", connection))
                 {
                     objcmd.CommandType = CommandType.StoredProcedure;
                     objcmd.Parameters.Add("@adDate", SqlDbType.DateTime2, 7);
@@ -484,6 +463,14 @@ namespace Smarsy.Logic
                     objcmd.ExecuteNonQuery();
                 }
             }
+        }
+
+        private SqlConnection CreateDbConnection()
+        {
+            var connection =  new SqlConnection(_connextionString);
+            connection.Open();
+
+            return connection;
         }
     }
 }

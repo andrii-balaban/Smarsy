@@ -56,7 +56,7 @@ namespace Smarsy
             List<LessonMark> result =_smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
 
             Logger.Info("Upserting LessonMark in database");
-            _repository.UpserStudentAllLessonsMarks(result);
+            _repository.UpserStudentAllLessonsMarks(Student, result);
         }
 
         public void UpdateStudents()

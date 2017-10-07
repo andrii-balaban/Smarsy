@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Configuration;
+using System.Linq;
 using System.Reflection;
 using Smarsy.Logic;
 
@@ -14,13 +15,15 @@ namespace Smarsy
         {
             var options = new CommandLineOptions();
 
-            if (!Parser.Default.ParseArguments(args, options))
-                return;
+            //if (!Parser.Default.ParseArguments(args, options))
+            //    return;
 
-            SmarsyOperations smarsyOperations = new SmarsyOperations(new SqlServerLogic(options.SmarsyLogin), new SmarsyBrowser.SmarsyBrowser(), new DateTimeProvider());
+            var connectionString = ConfigurationManager.ConnectionStrings["SmarsyDbConnectionString"].ConnectionString;
 
-            //// options.Methods = "LoginToSmarsy,UpdateMarks,UpdateHomeWork,UpdateAds,UpdateStudents,UpdateRemarks";
-            options.Methods = "LoginToSmarsy,UpdateRemarks";
+            SmarsyOperations smarsyOperations = new SmarsyOperations(new SqlServerLogic(connectionString), new SmarsyBrowser.SmarsyBrowser(), new DateTimeProvider());
+
+
+            smarsyOperations.LoginToSmarsy("test");
 
             InvokeMethods(smarsyOperations, options);
 
