@@ -9,18 +9,16 @@ namespace Smarsy.Logic
     using System.Data.SqlClient;
     using SmarsyEntities;
 
-    public class SqlServerLogic : IDatabaseLogic, ISmarsyRepository
+    public class SmarsyRepository : IDatabaseLogic, ISmarsyRepository
     {
-        private string _smarsyLogin;
-
         private readonly string _connextionString;
 
-        public SqlServerLogic(string connextionString)
+        public SmarsyRepository(string connextionString)
         {
             _connextionString = connextionString;
         }
 
-        public SqlServerLogic()
+        public SmarsyRepository()
         {
         }
 
@@ -395,20 +393,6 @@ namespace Smarsy.Logic
                 }
 
                 return result;
-            }
-        }
-
-        private int GetStudentIdBySmarsyLogin(string login)
-        {
-            using (SqlConnection connection = CreateDbConnection())
-            {
-                using (var objcmd = new SqlCommand("select dbo.GetStudentIdBySmarsyLogin(@login)", connection))
-                {
-                    objcmd.CommandType = CommandType.Text;
-                    objcmd.Parameters.AddWithValue("@login", login);
-                    var res = objcmd.ExecuteScalar();
-                    return int.Parse(res.ToString());
-                }
             }
         }
 

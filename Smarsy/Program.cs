@@ -20,7 +20,7 @@ namespace Smarsy
 
             var connectionString = ConfigurationManager.ConnectionStrings["SmarsyDbConnectionString"].ConnectionString;
 
-            SmarsyOperations smarsyOperations = new SmarsyOperations(new SqlServerLogic(connectionString), new SmarsyBrowser.SmarsyBrowser(), new DateTimeProvider());
+            SmarsyOperations smarsyOperations = new SmarsyOperations(new SmarsyRepository(connectionString), new SmarsyBrowser.SmarsyBrowser(), new DateTimeProvider());
 
 
             smarsyOperations.LoginToSmarsy("test");

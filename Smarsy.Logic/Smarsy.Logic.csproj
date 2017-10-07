@@ -54,7 +54,7 @@
     <Compile Include="IDatabaseLogic.cs" />
     <Compile Include="ISmarsyRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SqlServerLogic.cs" />
+    <Compile Include="SmarsyRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SmarsyEntities\SmarsyEntities.csproj">
