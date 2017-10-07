@@ -43,7 +43,7 @@ namespace Smarsy
 
         public void UpdateAds()
         {
-            AdPage marksPage = new AdPage(Student.SmarsyChildId);
+            AdPage marksPage = new AdPage(Student);
             List<Ad> result = _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
 
             Logger.Info("Upserting Ads in database");
@@ -61,7 +61,7 @@ namespace Smarsy
 
         public void UpdateStudents()
         {
-            StudentsPage marksPage = new StudentsPage(Student.SmarsyChildId);
+            StudentsPage marksPage = new StudentsPage(Student);
             List<SmarsyStudent> students = _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
 
             Logger.Info("Upserting Students in database");
@@ -70,7 +70,7 @@ namespace Smarsy
 
         public void UpdateRemarks()
         {
-            RemarksPage marksPage = new RemarksPage(Student.SmarsyChildId);
+            RemarksPage marksPage = new RemarksPage(Student);
             List<Remark> remarks = _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
 
             Logger.Info("Upserting Remarks in database");
@@ -79,7 +79,7 @@ namespace Smarsy
 
         public void UpdateHomeWork()
         {
-            HomeworkPage homeworkPage = new HomeworkPage(Student.SmarsyChildId, this);
+            HomeworkPage homeworkPage = new HomeworkPage(Student, this);
             List<HomeWork> homeWorks = _smarsyBrowser.GetSmarsyElementFromPage(homeworkPage).ToList();
 
             Logger.Info("Upserting Homework in database");

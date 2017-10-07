@@ -10,7 +10,7 @@ namespace Smarsy.SmarsyBrowser
     {
         private readonly Smarsy _smarsy;
 
-        public HomeworkPage(int childId, Smarsy smarsy) : base(childId)
+        public HomeworkPage(SmarsyStudent student, Smarsy smarsy) : base(student.SmarsyChildId)
         {
             _smarsy = smarsy;
         }

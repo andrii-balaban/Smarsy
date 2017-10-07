@@ -7,7 +7,7 @@ namespace Smarsy.SmarsyBrowser
 {
     public class StudentsPage : SmarsyPage<SmarsyStudent>
     {
-        public StudentsPage(int childId) : base(childId)
+        public StudentsPage(SmarsyStudent student) : base(student.SmarsyChildId)
         {
         }
 

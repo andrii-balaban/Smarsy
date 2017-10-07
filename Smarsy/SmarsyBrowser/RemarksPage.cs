@@ -7,7 +7,7 @@ namespace Smarsy.SmarsyBrowser
 {
     public class RemarksPage : SmarsyPage<Remark>
     {
-        public RemarksPage(int childId) : base(childId)
+        public RemarksPage(SmarsyStudent student) : base(student.SmarsyChildId)
         {
         }
 

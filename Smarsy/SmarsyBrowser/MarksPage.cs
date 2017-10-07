@@ -8,6 +8,7 @@ namespace Smarsy.SmarsyBrowser
     public class MarksPage : SmarsyPage<LessonMark>
     {
         protected override string PageLink => "http://smarsy.ua/private/parent.php?jsid=Diary&tab=Mark";
+
         public override IEnumerable<LessonMark> GetSmarsyElementsFromPage()
         {
             return GetPageTableRows().Select(CreateLessonMark);
