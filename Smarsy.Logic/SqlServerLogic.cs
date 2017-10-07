@@ -1,4 +1,7 @@
-﻿namespace Smarsy.Logic
+﻿using System.Linq;
+using System.Security;
+
+namespace Smarsy.Logic
 {
     using System;
     using System.Collections.Generic;
@@ -9,7 +12,7 @@
     public class SqlServerLogic : IDatabaseLogic, ISmarsyRepository
     {
         private readonly string _stringConn =
-            "Data Source = localhost;Initial Catalog=Smarsy; Integrated Security = True; Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout = 60; Encrypt=False;TrustServerCertificate=True";
+            "Data Source = LT-214871\\MSSQLEXPRESS;Initial Catalog=Smarsy; Integrated Security = True; Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout = 60; Encrypt=False;TrustServerCertificate=True";
         ////"Data Source=(localdb)\\ProjectsV13;Initial Catalog=Smarsy;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True";
         private string _smarsyLogin;
 
@@ -141,12 +144,21 @@
             return new StudentDto
             {
                 Login = login,
-                Password = password,
+                Password = CreateSecurePasswordString(password),
                 StudentId = studentId,
                 Name = name,
                 SmarsyChildId = smarsyChildId,
                 BirthDate = birthDate
             };
+        }
+
+        private SecureString CreateSecurePasswordString(string password)
+        {
+            var secureString = new SecureString();
+            password.ToList().ForEach(c => secureString.AppendChar(c));
+            secureString.MakeReadOnly();
+
+            return secureString;
         }
 
         public List<StudentDto> GetStudentsWithBirthdayTomorrow()
