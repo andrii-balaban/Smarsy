@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Security;
 
 namespace SmarsyEntities
@@ -9,12 +8,10 @@ namespace SmarsyEntities
         private readonly string _login;
         private readonly SecureString _secureString;
 
-        public SmarsyCredentials(string login, string password)
+        public SmarsyCredentials(string login, SecureString password)
         {
-            _secureString = new SecureString();
-            password.ToList().ForEach(c => _secureString.AppendChar(c));
-
             _login = login;
+            _secureString = password;
         }
 
         public NetworkCredential GetNetworkCredentials()

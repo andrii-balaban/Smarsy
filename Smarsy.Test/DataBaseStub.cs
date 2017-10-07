@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security;
 using Smarsy.Logic;
 using SmarsyEntities;
 
@@ -44,7 +45,7 @@ namespace Smarsy.Test
 
         public SmarsyStudent GetStudentBySmarsyLogin(string login)
         {
-            return new SmarsyStudent(new StudentDto { Login = login, Password = string.Empty});
+            return new SmarsyStudent(new StudentDto { Login = login, Password = new SecureString()});
         }
 
         public List<StudentDto> GetStudentsWithBirthdayTomorrow()

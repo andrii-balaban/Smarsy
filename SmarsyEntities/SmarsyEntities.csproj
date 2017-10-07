@@ -57,6 +57,7 @@
     <Compile Include="Remark.cs" />
     <Compile Include="SmarsyCredentials.cs" />
     <Compile Include="SmarsyElement.cs" />
+    <Compile Include="SmarsyStudent.cs" />
     <Compile Include="StudentDto.cs" />
     <Compile Include="StudentMark.cs" />
     <Compile Include="TextProcessor.cs" />
