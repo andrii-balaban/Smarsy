@@ -50,10 +50,26 @@ namespace Smarsy
         public void UpdateAds()
         {
             AdPage marksPage = new AdPage(Student);
-            List<Ad> result = _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
+            List<Ad> ads = GetListOfAds(marksPage);
 
-            Logger.Info("Upserting Ads in database");
+            LogAction("Upserting Ads in database");
+            UpsertAdds(ads);
+        }
+
+        private static void LogAction(string action)
+        {
+            Logger.Info(action);
+        }
+
+        private void UpsertAdds(List<Ad> result)
+        {
             _repository.UpsertAds(result);
+        }
+
+        private List<Ad> GetListOfAds(AdPage marksPage)
+        {
+            List<Ad> result = _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
+            return result;
         }
 
         public void UpdateMarks()
