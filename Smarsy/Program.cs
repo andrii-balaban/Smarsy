@@ -13,20 +13,39 @@ namespace Smarsy
         [STAThread]
         private static void Main(string[] args)
         {
-            var options = new CommandLineOptions();
-
-            if (!Parser.Default.ParseArguments(args, options))
+            if (TryGetOptionsFromArguments(args, out var options))
                 return;
 
-            var connectionString = ConfigurationManager.ConnectionStrings["SmarsyDbConnectionString"].ConnectionString;
+            Smarsy smarsy = CreateSmarsy();
 
-            Smarsy smarsy = new Smarsy(new SmarsyRepository(connectionString), new SmarsyBrowser.SmarsyBrowser(), new DateTimeProvider());
-
-            smarsy.Login("test");
+            LoginToSmarsy(smarsy);
 
             InvokeMethods(smarsy, options);
 
             SendEmails(smarsy, options);
+        }
+
+        private static bool TryGetOptionsFromArguments(string[] args, out CommandLineOptions options)
+        {
+            options = new CommandLineOptions();
+
+            if (!Parser.Default.ParseArguments(args, options))
+                return true;
+            return false;
+        }
+
+        private static void LoginToSmarsy(Smarsy smarsy)
+        {
+            smarsy.Login("test");
+        }
+
+        private static Smarsy CreateSmarsy()
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["SmarsyDbConnectionString"].ConnectionString;
+
+            Smarsy smarsy = new Smarsy(new SmarsyRepository(connectionString), new SmarsyBrowser.SmarsyBrowser(),
+                new DateTimeProvider());
+            return smarsy;
         }
 
         private static void SendEmails(Smarsy op, CommandLineOptions options)
