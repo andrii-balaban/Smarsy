@@ -35,8 +35,12 @@ namespace Smarsy
 
             LoginStudent();
         }
-
-
+        
+        private void LoginStudent()
+        {
+            var loginPage = CreatePage(PageType.Login) as LoginPage;
+            _smarsyBrowser.Login(loginPage);
+        }
 
         private Page CreatePage(PageType pageType)
         {
@@ -51,15 +55,9 @@ namespace Smarsy
             }
         }
 
-        private void LoginStudent()
-        {
-            var loginPage = CreatePage(PageType.Login) as LoginPage;
-            _smarsyBrowser.Login(loginPage);
-        }
-
         private void LoadStudent(string login)
         {
-            Logger.Info("Getting student info from database");
+            LogAction("Getting student info from database");
             Student = _repository.GetStudentBySmarsyLogin(login);
         }
 
