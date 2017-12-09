@@ -18,7 +18,7 @@ namespace Smarsy
 
             Smarsy smarsy = CreateSmarsy();
 
-            LoginToSmarsy(smarsy);
+            LoginToSmarsy(smarsy, "test");
 
             InvokeMethods(smarsy, options);
 
@@ -31,12 +31,13 @@ namespace Smarsy
 
             if (!Parser.Default.ParseArguments(args, options))
                 return true;
+
             return false;
         }
 
-        private static void LoginToSmarsy(Smarsy smarsy)
+        private static void LoginToSmarsy(Smarsy smarsy, string userLogin)
         {
-            smarsy.Login("test");
+            smarsy.Login(userLogin);
         }
 
         private static Smarsy CreateSmarsy()
@@ -45,6 +46,7 @@ namespace Smarsy
 
             Smarsy smarsy = new Smarsy(new SmarsyRepository(connectionString), new SmarsyBrowser.SmarsyBrowser(),
                 new DateTimeProvider());
+
             return smarsy;
         }
 
