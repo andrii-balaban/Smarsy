@@ -2,6 +2,12 @@ using System.Windows.Forms;
 
 namespace Smarsy.SmarsyBrowser
 {
+    public enum PageType
+    {
+        Login,
+        Ads
+    }
+
     public abstract class Page
     {
         protected abstract string PageLink { get; }

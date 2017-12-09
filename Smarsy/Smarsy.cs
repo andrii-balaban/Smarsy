@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Smarsy.Email;
 using Smarsy.SmarsyBrowser;
 
@@ -35,9 +36,24 @@ namespace Smarsy
             LoginStudent();
         }
 
+
+
+        private Page CreatePage(PageType pageType)
+        {
+            switch (pageType)
+            {
+                case PageType.Login:
+                    return new LoginPage(Student);
+                case PageType.Ads:
+                    return new AdPage(Student);
+                default:
+                    throw new ArgumentException("Unsupported page type");
+            }
+        }
+
         private void LoginStudent()
         {
-            var loginPage = new LoginPage(Student);
+            var loginPage = CreatePage(PageType.Login) as LoginPage;
             _smarsyBrowser.Login(loginPage);
         }
 
@@ -49,7 +65,7 @@ namespace Smarsy
 
         public void UpdateAds()
         {
-            AdPage marksPage = new AdPage(Student);
+            AdPage marksPage = CreatePage(PageType.Ads) as AdPage;
             List<Ad> ads = GetListOfAds(marksPage);
 
             LogAction("Upserting Ads in database");
