@@ -32,7 +32,13 @@ namespace Smarsy
         {
             LoadStudent(login);
 
-            _smarsyBrowser.Login(new LoginPage(Student));
+            LoginStudent();
+        }
+
+        private void LoginStudent()
+        {
+            var loginPage = new LoginPage(Student);
+            _smarsyBrowser.Login(loginPage);
         }
 
         private void LoadStudent(string login)
