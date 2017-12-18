@@ -82,13 +82,13 @@ namespace Smarsy
 
         private IEnumerable<Ad> GetListOfAds(AdPage marksPage)
         {
-            return _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
+            return _smarsyBrowser.GetSmarsyElementFromPage(marksPage);
         }
 
         public void UpdateMarks()
         {
             MarksPage marksPage = new MarksPage(Student.SmarsyChildId);
-            List<LessonMark> result =_smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
+            IEnumerable<LessonMark> result =_smarsyBrowser.GetSmarsyElementFromPage(marksPage);
 
             LogAction("Upserting LessonMark in database");
             _repository.UpserStudentAllLessonsMarks(Student, result);

@@ -62,7 +62,7 @@ namespace Smarsy.Logic
             }
         }
 
-        public void UpserStudentAllLessonsMarks(SmarsyStudent student, IList<LessonMark> marks)
+        public void UpserStudentAllLessonsMarks(SmarsyStudent student, IEnumerable<LessonMark> marks)
         {
             foreach (var mark in marks)
             {

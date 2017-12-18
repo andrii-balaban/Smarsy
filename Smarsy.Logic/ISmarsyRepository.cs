@@ -8,7 +8,7 @@ namespace Smarsy.Logic
         void UpsertLessons(List<string> lessons);
         void UpsertAds(IEnumerable<Ad> ads);
         void UpsertHomeWorks(List<HomeWork> homeWorks);
-        void UpserStudentAllLessonsMarks(SmarsyStudent student, IList<LessonMark> marks);
+        void UpserStudentAllLessonsMarks(SmarsyStudent student, IEnumerable<LessonMark> marks);
         int GetLessonIdByLessonShortName(string lessonName);
         int InsertTeacherIfNotExists(string teacherName);
         int GetLessonIdByName(string markLessonName);

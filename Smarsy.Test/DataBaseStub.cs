@@ -23,7 +23,7 @@ namespace Smarsy.Test
             throw new NotImplementedException();
         }
 
-        public void UpserStudentAllLessonsMarks(SmarsyStudent student, IList<LessonMark> marks)
+        public void UpserStudentAllLessonsMarks(SmarsyStudent student, IEnumerable<LessonMark> marks)
         {
             throw new NotImplementedException();
         }
