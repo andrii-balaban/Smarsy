@@ -8,7 +8,7 @@ namespace Smarsy.Test
 {
     public class DataBaseStub : ISmarsyRepository
     {
-        public void UpsertLessons(List<string> lessons)
+        public void UpsertLessons(IEnumerable<string> lessons)
         {
             throw new NotImplementedException();
         }
@@ -18,7 +18,7 @@ namespace Smarsy.Test
             throw new NotImplementedException();
         }
 
-        public void UpsertHomeWorks(List<HomeWork> homeWorks)
+        public void UpsertHomeWorks(IEnumerable<HomeWork> homeWorks)
         {
             throw new NotImplementedException();
         }
@@ -48,37 +48,37 @@ namespace Smarsy.Test
             return new SmarsyStudent(new StudentDto { Login = login, Password = new SecureString()});
         }
 
-        public List<StudentDto> GetStudentsWithBirthdayTomorrow()
+        public IEnumerable<StudentDto> GetStudentsWithBirthdayTomorrow()
         {
             throw new NotImplementedException();
         }
 
-        public List<Ad> GetNewAds()
+        public IEnumerable<Ad> GetNewAds()
         {
             throw new NotImplementedException();
         }
 
-        public List<Remark> GetNewRemarks()
+        public IEnumerable<Remark> GetNewRemarks()
         {
             throw new NotImplementedException();
         }
 
-        public List<HomeWork> GetHomeWorkForFuture()
+        public IEnumerable<HomeWork> GetHomeWorkForFuture()
         {
             throw new NotImplementedException();
         }
 
-        public List<LessonMark> GetStudentMarks(int studentId)
+        public IEnumerable<LessonMark> GetStudentMarks(int studentId)
         {
             throw new NotImplementedException();
         }
 
-        public void UpsertStudents(IList<SmarsyStudent> students)
+        public void UpsertStudents(IEnumerable<SmarsyStudent> students)
         {
             throw new NotImplementedException();
         }
 
-        public void UpsertRemarks(IList<Remark> remarks)
+        public void UpsertRemarks(IEnumerable<Remark> remarks)
         {
             throw new NotImplementedException();
         }

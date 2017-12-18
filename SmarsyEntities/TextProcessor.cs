@@ -8,6 +8,14 @@ namespace SmarsyEntities
 
         public static TextProcessor Processor => _textProcessor ?? (_textProcessor = new TextProcessor());
 
+        private static IDateTimeProvider _dateTimeProvider;
+
+        public static IDateTimeProvider DateTimeProvider
+        {
+            get => _dateTimeProvider ?? (_dateTimeProvider = new DateTimeProvider());
+            set => _dateTimeProvider = value;
+        }
+
         protected TextProcessor()
         {
             
@@ -27,12 +35,13 @@ namespace SmarsyEntities
 
         public DateTime GetDateFromText(string birthDate, int studentAge)
         {
-            var year = DateTime.Now.Year - studentAge;
+            var dateTime = DateTimeProvider.GetDateTime();
+            var year = dateTime.Year - studentAge;
             var month = GetMonthFromRussianName(GetMonthNameFromStringWithDayNumber(birthDate));
             var day = GetDayFromStringWithDayNumber(birthDate);
-            var tmpDate = new DateTime(DateTime.Now.Year, month, day);
+            var tmpDate = new DateTime(dateTime.Year, month, day);
 
-            if (DateTime.Now < tmpDate)
+            if (dateTime < tmpDate)
             {
                 year--;
             }

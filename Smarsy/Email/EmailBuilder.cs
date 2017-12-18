@@ -41,7 +41,7 @@ namespace Smarsy.Email
             return this;
         }
 
-        public EmailBuilder WithHomeworks(List<HomeWork> homeWork)
+        public EmailBuilder WithHomeworks(IEnumerable<HomeWork> homeWork)
         {
             _homeworks = homeWork;
             return this;

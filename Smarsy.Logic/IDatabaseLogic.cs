@@ -4,6 +4,6 @@
 
     public interface IDatabaseLogic
     {
-        void UpsertLessons(List<string> lessons);
+        void UpsertLessons(IEnumerable<string> lessons);
     }
 }

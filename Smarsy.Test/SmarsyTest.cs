@@ -75,6 +75,7 @@ namespace Smarsy.Test
         {
             // Arrange
             DateTime expected = new DateTime(2005, 12, 17);
+            TextProcessor.DateTimeProvider = new MockOfDateTimeProvider();
             TextProcessor textProcessor = TextProcessor.Processor;
 
             // Act
@@ -87,6 +88,14 @@ namespace Smarsy.Test
         private static Smarsy CreateOperational()
         {
             return new Smarsy(new DataBaseStub(), new SmarsyBrowserStub(), new DateTimeProvider());
+        }
+
+        public class MockOfDateTimeProvider : SmarsyEntities.IDateTimeProvider
+        {
+            public DateTime GetDateTime()
+            {
+                return new DateTime(2017, 12, 15);
+            }
         }
     }
 }

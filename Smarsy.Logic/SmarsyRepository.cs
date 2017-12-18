@@ -38,7 +38,7 @@ namespace Smarsy.Logic
         {
         }
 
-        public void UpsertLessons(List<string> lessons)
+        public void UpsertLessons(IEnumerable<string> lessons)
         {
             foreach (var lesson in lessons)
             {
@@ -54,7 +54,7 @@ namespace Smarsy.Logic
             }
         }
 
-        public void UpsertHomeWorks(List<HomeWork> homeWorks)
+        public void UpsertHomeWorks(IEnumerable<HomeWork> homeWorks)
         {
             foreach (var homeWork in homeWorks)
             {
@@ -167,7 +167,7 @@ namespace Smarsy.Logic
             return secureString;
         }
 
-        public List<StudentDto> GetStudentsWithBirthdayTomorrow()
+        public IEnumerable<StudentDto> GetStudentsWithBirthdayTomorrow()
         {
             var students = new List<StudentDto>();
             using (SqlConnection connection = CreateDbConnection())
@@ -194,7 +194,7 @@ namespace Smarsy.Logic
             }
         }
 
-        public List<Ad> GetNewAds()
+        public IEnumerable<Ad> GetNewAds()
         {
             var ads = new List<Ad>();
             using (SqlConnection connection = CreateDbConnection())
@@ -218,7 +218,7 @@ namespace Smarsy.Logic
             }
         }
 
-        public List<Remark> GetNewRemarks()
+        public IEnumerable<Remark> GetNewRemarks()
         {
             var remarks = new List<Remark>();
             using (SqlConnection connection = CreateDbConnection())
@@ -244,7 +244,7 @@ namespace Smarsy.Logic
             }
         }
         
-        public List<HomeWork> GetHomeWorkForFuture()
+        public IEnumerable<HomeWork> GetHomeWorkForFuture()
         {
             var result = new List<HomeWork>();
 
@@ -271,7 +271,7 @@ namespace Smarsy.Logic
             }
         }
 
-        public List<LessonMark> GetStudentMarks(int studentId)
+        public IEnumerable<LessonMark> GetStudentMarks(int studentId)
         {
             var result = new List<LessonMark>();
             using (SqlConnection connection = CreateDbConnection())
@@ -311,7 +311,7 @@ namespace Smarsy.Logic
             return result;
         }
 
-        public void UpsertStudents(IList<SmarsyStudent> students)
+        public void UpsertStudents(IEnumerable<SmarsyStudent> students)
         {
             foreach (var student in students)
             {
@@ -319,7 +319,7 @@ namespace Smarsy.Logic
             }
         }
 
-        public void UpsertRemarks(IList<Remark> remarks)
+        public void UpsertRemarks(IEnumerable<Remark> remarks)
         {
             foreach (var remark in remarks)
             {

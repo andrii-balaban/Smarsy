@@ -5,20 +5,20 @@ namespace Smarsy.Logic
 {
     public interface ISmarsyRepository
     {
-        void UpsertLessons(List<string> lessons);
+        void UpsertLessons(IEnumerable<string> lessons);
         void UpsertAds(IEnumerable<Ad> ads);
-        void UpsertHomeWorks(List<HomeWork> homeWorks);
+        void UpsertHomeWorks(IEnumerable<HomeWork> homeWorks);
         void UpserStudentAllLessonsMarks(SmarsyStudent student, IEnumerable<LessonMark> marks);
         int GetLessonIdByLessonShortName(string lessonName);
         int InsertTeacherIfNotExists(string teacherName);
         int GetLessonIdByName(string markLessonName);
         SmarsyStudent GetStudentBySmarsyLogin(string login);
-        List<StudentDto> GetStudentsWithBirthdayTomorrow();
-        List<Ad> GetNewAds();
-        List<Remark> GetNewRemarks();
-        List<HomeWork> GetHomeWorkForFuture();
-        List<LessonMark> GetStudentMarks(int studentId);
-        void UpsertStudents(IList<SmarsyStudent> students);
-        void UpsertRemarks(IList<Remark> remarks);
+        IEnumerable<StudentDto> GetStudentsWithBirthdayTomorrow();
+        IEnumerable<Ad> GetNewAds();
+        IEnumerable<Remark> GetNewRemarks();
+        IEnumerable<HomeWork> GetHomeWorkForFuture();
+        IEnumerable<LessonMark> GetStudentMarks(int studentId);
+        void UpsertStudents(IEnumerable<SmarsyStudent> students);
+        void UpsertRemarks(IEnumerable<Remark> remarks);
     }
 }
