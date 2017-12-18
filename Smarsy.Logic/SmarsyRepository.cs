@@ -46,7 +46,7 @@ namespace Smarsy.Logic
             }
         }
 
-        public void UpsertAds(IList<Ad> ads)
+        public void UpsertAds(IEnumerable<Ad> ads)
         {
             foreach (var ad in ads)
             {

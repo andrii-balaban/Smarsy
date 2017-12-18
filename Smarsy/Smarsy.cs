@@ -64,7 +64,7 @@ namespace Smarsy
         public void UpdateAds()
         {
             AdPage marksPage = CreatePage(PageType.Ads) as AdPage;
-            List<Ad> ads = GetListOfAds(marksPage);
+            IEnumerable<Ad> ads = GetListOfAds(marksPage);
 
             LogAction("Upserting Ads in database");
             UpsertAdds(ads);
@@ -75,15 +75,14 @@ namespace Smarsy
             Logger.Info(action);
         }
 
-        private void UpsertAdds(List<Ad> result)
+        private void UpsertAdds(IEnumerable<Ad> result)
         {
             _repository.UpsertAds(result);
         }
 
-        private List<Ad> GetListOfAds(AdPage marksPage)
+        private IEnumerable<Ad> GetListOfAds(AdPage marksPage)
         {
-            List<Ad> result = _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
-            return result;
+            return _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
         }
 
         public void UpdateMarks()
@@ -91,7 +90,7 @@ namespace Smarsy
             MarksPage marksPage = new MarksPage(Student.SmarsyChildId);
             List<LessonMark> result =_smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
 
-            Logger.Info("Upserting LessonMark in database");
+            LogAction("Upserting LessonMark in database");
             _repository.UpserStudentAllLessonsMarks(Student, result);
         }
 
@@ -100,7 +99,7 @@ namespace Smarsy
             StudentsPage marksPage = new StudentsPage(Student);
             List<SmarsyStudent> students = _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
 
-            Logger.Info("Upserting Students in database");
+            LogAction("Upserting Students in database");
             _repository.UpsertStudents(students);
         }
 
@@ -109,7 +108,7 @@ namespace Smarsy
             RemarksPage marksPage = new RemarksPage(Student);
             List<Remark> remarks = _smarsyBrowser.GetSmarsyElementFromPage(marksPage).ToList();
 
-            Logger.Info("Upserting Remarks in database");
+            LogAction("Upserting Remarks in database");
             _repository.UpsertRemarks(remarks);
         }
 
@@ -118,7 +117,7 @@ namespace Smarsy
             HomeworkPage homeworkPage = new HomeworkPage(Student, this);
             List<HomeWork> homeWorks = _smarsyBrowser.GetSmarsyElementFromPage(homeworkPage).ToList();
 
-            Logger.Info("Upserting Homework in database");
+            LogAction("Upserting Homework in database");
             Repository.UpsertHomeWorks(homeWorks);
         }
 
@@ -126,7 +125,7 @@ namespace Smarsy
         {
             string[] emailsArray = emailsTo.ToArray();
 
-            Logger.Info($"Sending email to {string.Join(",", emailsArray)}");
+            LogAction($"Sending email to {string.Join(",", emailsArray)}");
             
             Email.Email email = CreatEmail(emailFrom, emailsArray);
 

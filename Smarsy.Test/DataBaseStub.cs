@@ -13,7 +13,7 @@ namespace Smarsy.Test
             throw new NotImplementedException();
         }
 
-        public void UpsertAds(IList<Ad> ads)
+        public void UpsertAds(IEnumerable<Ad> ads)
         {
             throw new NotImplementedException();
         }
