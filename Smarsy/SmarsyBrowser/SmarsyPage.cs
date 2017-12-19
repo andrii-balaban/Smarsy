@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using Smarsy.Logic;
 using SmarsyEntities;
 
 namespace Smarsy.SmarsyBrowser

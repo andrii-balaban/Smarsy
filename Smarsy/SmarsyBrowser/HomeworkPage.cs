@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using Smarsy.Logic;
 using SmarsyEntities;
 
 namespace Smarsy.SmarsyBrowser
 {
     public class HomeworkPage : SmarsyPage<HomeWork>
     {
-        private readonly Smarsy _smarsy;
+        private readonly ISmarsyRepository _smarsyRepository;
 
-        public HomeworkPage(SmarsyStudent student, Smarsy smarsy) : base(student.SmarsyChildId)
+        public HomeworkPage(SmarsyStudent student,ISmarsyRepository repository) : base(student.SmarsyChildId)
         {
-            _smarsy = smarsy;
+            _smarsyRepository = repository;
         }
 
         protected override string PageLink => "http://smarsy.ua/private/parent.php?jsid=Homework&tab=Lesson";
@@ -36,8 +37,8 @@ namespace Smarsy.SmarsyBrowser
                     var lessonName = GetLessonNameFromLessonWithTeacher(lessonNameWithTeacher);
                     var teacherName = GetTeacherNameFromLessonWithTeacher(lessonNameWithTeacher, lessonName);
 
-                    teacherId = _smarsy.Repository.InsertTeacherIfNotExists(teacherName);
-                    lessonId = _smarsy.Repository.GetLessonIdByLessonShortName(lessonName);
+                    teacherId = _smarsyRepository.InsertTeacherIfNotExists(teacherName);
+                    lessonId = _smarsyRepository.GetLessonIdByLessonShortName(lessonName);
                 }
                 else
                 {

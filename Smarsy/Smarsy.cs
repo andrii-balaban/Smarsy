@@ -27,8 +27,6 @@ namespace Smarsy
 
         public SmarsyStudent Student { get; set; }
 
-        public ISmarsyRepository Repository => _repository;
-
         public void Login(string login)
         {
             LoadStudent(login);
@@ -114,11 +112,11 @@ namespace Smarsy
 
         public void UpdateHomeWork()
         {
-            HomeworkPage homeworkPage = new HomeworkPage(Student, this);
+            HomeworkPage homeworkPage = new HomeworkPage(Student, _repository);
             List<HomeWork> homeWorks = _smarsyBrowser.GetSmarsyElementFromPage(homeworkPage).ToList();
 
             LogAction("Upserting Homework in database");
-            Repository.UpsertHomeWorks(homeWorks);
+            _repository.UpsertHomeWorks(homeWorks);
         }
 
         public void SendEmail(string emailFrom, IEnumerable<string> emailsTo)
@@ -140,11 +138,11 @@ namespace Smarsy
                 .WithFromAddress(emailFrom)
                 .WithToAddresses(emailsTo)
                 .WithSubject(subject)
-                .WithHomeworks(Repository.GetHomeWorkForFuture())
-                .WithTomorrowBirthDayStudents(Repository.GetStudentsWithBirthdayTomorrow())
-                .WithRemarks(Repository.GetNewRemarks())
-                .WithAds(Repository.GetNewAds())
-                .WithMarks(Repository.GetStudentMarks(Student.StudentId))
+                .WithHomeworks(_repository.GetHomeWorkForFuture())
+                .WithTomorrowBirthDayStudents(_repository.GetStudentsWithBirthdayTomorrow())
+                .WithRemarks(_repository.GetNewRemarks())
+                .WithAds(_repository.GetNewAds())
+                .WithMarks(_repository.GetStudentMarks(Student.StudentId))
                 .Build();
 
             return email;
