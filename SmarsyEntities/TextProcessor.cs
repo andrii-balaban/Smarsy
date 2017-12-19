@@ -12,7 +12,7 @@ namespace SmarsyEntities
 
         public static IDateTimeProvider DateTimeProvider
         {
-            get => _dateTimeProvider ?? (_dateTimeProvider = new DateTimeProvider());
+            get => _dateTimeProvider;// ?? (_dateTimeProvider = new DateTimeProvider());
             set => _dateTimeProvider = value;
         }
 
