@@ -25,19 +25,19 @@ namespace Smarsy
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public SmarsyStudent Student { get; set; }
+        private SmarsyStudent Student { get; set; }
 
-        public void Login(string login)
+        public void Run(string login)
         {
             LoadStudent(login);
 
-            LoginStudent();
+            Login();
         }
         
-        private void LoginStudent()
+        private void Login()
         {
             var loginPage = CreateSmarsyPage(PageType.Login) as LoginPage;
-            _smarsyBrowser.Login(loginPage);
+            _smarsyBrowser.GoToPage(loginPage);
         }
 
         private Page CreateSmarsyPage(PageType pageType)

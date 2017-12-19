@@ -17,7 +17,14 @@ namespace Smarsy.SmarsyBrowser
             _smarsyStudent = student;
         }
 
-        public void EnterCredentials()
+        public override void AfterLoaded()
+        {
+            EnterCredentials();
+
+            base.AfterLoaded();
+        }
+
+        private void EnterCredentials()
         {
             NetworkCredential credentials = _smarsyStudent.Credentials.GetNetworkCredentials();
             FillElementWithValue("username", credentials.UserName);

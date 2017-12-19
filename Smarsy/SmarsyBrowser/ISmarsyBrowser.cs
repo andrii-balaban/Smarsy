@@ -8,7 +8,5 @@ namespace Smarsy.SmarsyBrowser
         IEnumerable<T> GetSmarsyElementFromPage<T>(SmarsyPage<T> page) where T : SmarsyElement;
 
         void GoToPage(Page page);
-
-        void Login(LoginPage student);
     }
 }

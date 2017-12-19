@@ -14,11 +14,6 @@ namespace Smarsy.Test
 
         public void GoToPage(Page page)
         {
-            throw new NotImplementedException();
-        }
-
-        public void Login(LoginPage page)
-        {
             
         }
     }

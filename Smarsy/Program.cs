@@ -19,7 +19,7 @@ namespace Smarsy
 
             Smarsy smarsy = CreateSmarsy();
 
-            LoginToSmarsy(smarsy, "test");
+            RunSmarsy(smarsy, "test");
 
             InvokeMethods(smarsy, options);
 
@@ -36,9 +36,9 @@ namespace Smarsy
             return false;
         }
 
-        private static void LoginToSmarsy(Smarsy smarsy, string userLogin)
+        private static void RunSmarsy(Smarsy smarsy, string userLogin)
         {
-            smarsy.Login(userLogin);
+            smarsy.Run(userLogin);
         }
 
         private static Smarsy CreateSmarsy()
@@ -48,11 +48,11 @@ namespace Smarsy
             return new Smarsy(new SmarsyRepository(connectionString), new SmarsyBrowser.SmarsyBrowser(), new DateTimeProvider());
         }
 
-        private static void SendEmails(Smarsy op, CommandLineOptions options)
+        private static void SendEmails(Smarsy smarsy, CommandLineOptions options)
         {
             string[] emails = options.GetEmails().ToArray();
 
-            op.SendEmail(options.From, emails);
+            smarsy.SendEmail(options.From, emails);
         }
 
         private static void InvokeMethods(Smarsy op, CommandLineOptions options)

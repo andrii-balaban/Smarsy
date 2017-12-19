@@ -27,5 +27,10 @@ namespace Smarsy.SmarsyBrowser
         {
             return Document != null;
         }
+
+        public virtual void AfterLoaded()
+        {
+            
+        }
     }
 }

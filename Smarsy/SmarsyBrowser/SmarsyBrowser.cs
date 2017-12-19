@@ -16,7 +16,7 @@ namespace Smarsy.SmarsyBrowser
             Browser = new WebBrowser();
         }
 
-        private WebBrowser Browser { get; set; }
+        private WebBrowser Browser { get; }
 
         public IEnumerable<T> GetSmarsyElementFromPage<T>(SmarsyPage<T> page) where T : SmarsyElement
         {
@@ -34,20 +34,13 @@ namespace Smarsy.SmarsyBrowser
         {
             GoToLink(page.GetPageAddress());
             page.SetPageDocument(Browser.Document);
+            page.AfterLoaded();
         }
 
         public void GoToLink(string url)
         {
             Logger.Info($"Go to {url} page");
             Browser.Navigate(url);
-            WaitForPageToLoad();
-        }
-
-        public void Login(LoginPage page)
-        {
-            GoToPage(page);
-            page.EnterCredentials();
-
             WaitForPageToLoad();
         }
 

@@ -29,20 +29,6 @@ namespace Smarsy.Test
         }
 
         [Test]
-        public void Login_ShouldReturnExcpectedLogin()
-        {
-            // Arrange
-            Smarsy smarsy = CreateOperational();
-            smarsy.Login("1");
-
-            // Act
-            string studentLogin = smarsy.Student.Credentials.GetNetworkCredentials().UserName;
-
-            // Assert
-            studentLogin.Should().Be("1");
-        }
-
-        [Test]
         public void GetDateFromText_WhenTextContainesDate_ShouldReturnExpectedDate()
         {
             // Arrange
@@ -85,12 +71,7 @@ namespace Smarsy.Test
             result.Should().Be(expected);
         }
 
-        private static Smarsy CreateOperational()
-        {
-            return new Smarsy(new DataBaseStub(), new SmarsyBrowserStub(), new DateTimeProvider());
-        }
-
-        public class MockOfDateTimeProvider : SmarsyEntities.IDateTimeProvider
+        public class MockOfDateTimeProvider : IDateTimeProvider
         {
             public DateTime GetDateTime()
             {
