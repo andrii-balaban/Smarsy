@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Smarsy.Logic;
+using SmarsyEntities;
 
 namespace Smarsy
 {

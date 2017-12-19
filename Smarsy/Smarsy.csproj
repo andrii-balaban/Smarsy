@@ -70,12 +70,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLineOptions.cs" />
-    <Compile Include="DateTimeProvider.cs" />
     <Compile Include="Email\Email.cs" />
     <Compile Include="Email\EmailBuilder.cs" />
     <Compile Include="Email\EmailClient.cs" />
     <Compile Include="Extensions\StringBuilderExtension.cs" />
-    <Compile Include="IDateTimeProvider.cs" />
     <Compile Include="SmarsyBrowser\AdPage.cs" />
     <Compile Include="SmarsyBrowser\HomeworkPage.cs" />
     <Compile Include="SmarsyBrowser\ISmarsyBrowser.cs" />

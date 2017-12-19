@@ -1,6 +1,6 @@
 using System;
 
-namespace Smarsy
+namespace SmarsyEntities
 {
     public class DateTimeProvider : IDateTimeProvider
     {
