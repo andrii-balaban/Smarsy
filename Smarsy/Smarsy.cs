@@ -36,11 +36,11 @@ namespace Smarsy
         
         private void LoginStudent()
         {
-            var loginPage = CreatePage(PageType.Login) as LoginPage;
+            var loginPage = CreateSmarsyPage(PageType.Login) as LoginPage;
             _smarsyBrowser.Login(loginPage);
         }
 
-        private Page CreatePage(PageType pageType)
+        private Page CreateSmarsyPage(PageType pageType)
         {
             switch (pageType)
             {
@@ -59,13 +59,18 @@ namespace Smarsy
             Student = _repository.GetStudentBySmarsyLogin(login);
         }
 
-        public void UpdateAds()
+        public void UpdateAdsFromSmarsy()
         {
-            AdPage marksPage = CreatePage(PageType.Ads) as AdPage;
-            IEnumerable<Ad> ads = GetListOfAds(marksPage);
+            IEnumerable<Ad> ads = LoadAddsFromPage();
 
             LogAction("Upserting Ads in database");
             UpsertAdds(ads);
+        }
+
+        private IEnumerable<Ad> LoadAddsFromPage()
+        {
+            AdPage marksPage = CreateSmarsyPage(PageType.Ads) as AdPage;
+            return GetListOfAds(marksPage);
         }
 
         private static void LogAction(string action)

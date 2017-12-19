@@ -43,12 +43,9 @@ namespace Smarsy
 
         private static Smarsy CreateSmarsy()
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["SmarsyDbConnectionString"].ConnectionString;
+            string connectionString = ConfigurationManager.ConnectionStrings["SmarsyDbConnectionString"].ConnectionString;
 
-            Smarsy smarsy = new Smarsy(new SmarsyRepository(connectionString), new SmarsyBrowser.SmarsyBrowser(),
-                new DateTimeProvider());
-
-            return smarsy;
+            return new Smarsy(new SmarsyRepository(connectionString), new SmarsyBrowser.SmarsyBrowser(), new DateTimeProvider());
         }
 
         private static void SendEmails(Smarsy op, CommandLineOptions options)
